@@ -14,3 +14,5 @@ num_birthdays = 20         # Number of birthdays
 
 probability = simulate_calculation(num_simulations, num_birthdays)
 print("Approximate probability (simulation):", probability)
+
+

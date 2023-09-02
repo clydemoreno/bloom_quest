@@ -135,7 +135,18 @@ class Test32BitXORChecksum(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    # Define the string you want to write to the file
+    content = "Hello, this is some text that will be written to a file."
+
+    # Specify the file path
+    file_path = "./output.txt"
+
+    # Open the file in write mode and write the content
+    with open(file_path, "w") as file:
+        file.write(content)
+
+    # print(f"String has been written to {file_path}")    
+    # unittest.main()
     # bitarray = [1] * 64
     # # result = calculate_32bit_xor_checksum(bitarray)
     # result = checksum(bitarray)
@@ -158,3 +169,4 @@ if __name__ == '__main__':
     
     # arr = [1, 0,1]
     # assert(checksum(arr) == [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+

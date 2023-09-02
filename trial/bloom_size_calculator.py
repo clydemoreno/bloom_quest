@@ -22,3 +22,8 @@ print(f"Bloom Memory size: {int(bloom_filter_size/8)}")
 
 #6 thousand entries using 
 print(f"Hash map Memory size: {(expected_elements * 32 )+ (expected_elements * 4)}")
+
+#can you serialize a hash map into a file and then get the file size?
+
+
+

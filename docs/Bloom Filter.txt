@@ -1,0 +1,75 @@
+The Bloom filter is a memory-efficient probabilistic data structure for quickly testing whether an element is a member of a set. It's particularly useful for cases where you need to perform membership tests without requiring a full set of data to be stored in memory.
+
+Here's a summary of the capabilities and characteristics of the Bloom filter implementation in Redis:
+
+1. **Memory Efficiency:** Bloom filters are memory-efficient data structures. They use a compact array of bits to represent the presence or absence of elements in the set. This allows you to store a large number of elements using relatively little memory.
+
+2. **Membership Testing:** The primary use of a Bloom filter is to quickly check whether an element is a member of a set. It can return one of two results: "possibly in set" or "definitely not in set." However, false positives (indicating an element is in the set when it's not) are possible, while false negatives (indicating an element is not in the set when it is) are not.
+
+3. **Hashing:** The Bloom filter uses multiple hash functions to map elements to different positions in the bit array. The number of hash functions and the size of the bit array are configurable parameters that influence the accuracy of the Bloom filter.
+
+4. **Adding Elements:** To add an element to the Bloom filter, the element is passed through the hash functions, and the corresponding bit positions in the bit array are set to 1.
+
+5. **Checking Membership:** When checking for membership, the same hash functions are applied to the element. If all the corresponding bit positions are set to 1, the element is considered "possibly in set." If any of the corresponding bit positions are not set to 1, the element is "definitely not in set."
+
+6. **False Positives:** Bloom filters can produce false positive results, meaning that the filter might indicate an element is in the set even though it isn't. The probability of false positives increases as the filter becomes more populated and hash functions are applied more times.
+
+7. **False Negatives:** Bloom filters don't produce false negatives. If the filter indicates an element is not in the set, it's guaranteed to be accurate.
+
+8. **Size and Accuracy Trade-off:** The size of the bit array and the number of hash functions determine the trade-off between memory usage and accuracy. A larger bit array and more hash functions reduce the probability of false positives but increase memory usage.
+
+
+
+
+Generating the bloom filter bit array
+BloomFilterBuilder
+set default values:
+write file path
+
+1. Connect to external data source. Use LastEvaluatedKey for dynamodb and use pagination for RDS. https://chat.openai.com/share/60265fcc-0f9d-4d8e-92ac-f6e40b3960a3
+    1. get the count first
+    2. get the list of IDs
+    3. use async keywords for each i/o call
+    4. Instantiate BloomFilterWriter. Set init param as 0 default
+    5. 
+    6. loop through. use yield in every item processing to reduce memory footprint
+    7. Pass ID to BloomFilter
+    9. add IDs
+2. Serializer 
+    1. Accepts a bitarray
+    2. Convert to string representation
+    3. Create a signature
+    5. Combine str representation|signature
+    6. Serialize bitarray
+    7. Write to a file
+
+BloomFilterReader
+set default values:
+read file path
+
+1. Deserializer
+    1. Listens to a file
+    2. Deserialize file
+    3. Split deserialized string to two
+    4. Hash the 2nd part and compare to 1st part
+    5. Convert 1st part to a bitarray
+    6. Publish bitarray
+2. Core
+    1. Listens to new bitarray
+    2. add new bit array
+
+save the bitarray to file
+
+
+Bloomfilter in memory will listen to a file
+
+file gets loaded to memory
+converted to bitarray
+
+
+
+another alternative to double buffer
+LRUCache using concurrent futures in python
+https://chat.openai.com/share/1c771226-c8bb-40d6-8dd5-6cb87838bee0
+
+

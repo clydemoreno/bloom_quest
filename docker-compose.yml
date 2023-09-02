@@ -1,0 +1,23 @@
+version: '3'
+services:
+  python-app:
+    # build: ./trial  # Replace with the path to your Python app directory
+    image: my-python-app
+    depends_on:
+      - mysql
+    networks:
+      - my-network
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

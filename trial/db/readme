@@ -1,0 +1,29 @@
+docker build -t my-own-mysql .
+
+docker run -it --name my-db-container my-own-mysql -p mysecretpassword
+
+
+docker exec -it my-db-containerbash -c "mysql -uroot -p mysecretpassword mydb < /create_table.sql"
+
+#list all the docker names including those that are stopped
+docker ps -a
+docker ps -aq --format "{{.Names}}"
+
+# get inside the container
+docker exec -it mysql-container bash
+
+# copy files to docker
+docker cp /path/on/host/file_or_directory <container_id_or_name>:/path/in/container/
+
+
+
+todo:
+1. either download a mysql client
+2. get it to work again using regular running the container.
+3. remove the cotainer names again
+4. create the sql script.
+5. create a scheduled task in python that gets the list of all orders. returning the ids.
+6. re-build the bloom filter
+7. add to an array of bloomfilters.
+8. The selector picks the latest bloomfilter based on timestamp
+7. create a web api that will get the orders. 

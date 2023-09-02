@@ -66,6 +66,7 @@ def simulate(num_simulations: int, num_birthdays: int) -> float:
 
 
 
+
 def simulate_day_prob(num_simulations: int, num_birthdays: int) -> float:
     count = 0
     for _ in range(num_simulations):
