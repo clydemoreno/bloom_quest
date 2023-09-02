@@ -25,6 +25,8 @@ build_db_image:
 	docker build -t my-own-mysql -f ./db/Dockerfile
 
 push_to_origin:
+	git commit -m "all changes"
+	git add .
 	git push git@github.com-personal:clydemoreno/bloom_quest.git
 
 prof:

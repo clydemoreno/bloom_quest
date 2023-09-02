@@ -8,6 +8,7 @@ class BloomFilter:
         self.size = self.get_size(item_count, prob)
         self.hash_count = self.get_hash_count(self.size, item_count)
         self.entries = [(0, array('b', [False] * self.size))]
+        print(self.entries)
 
     def _hash(self, value, seed):
         hash_val = hashlib.sha256(value.encode() + bytes([seed])).hexdigest()
@@ -17,6 +18,7 @@ class BloomFilter:
         new_bit_array = self._create_new_bit_array(value)
         self.entries.append((timestamp, new_bit_array))
         self._limit_entries()
+        print(self.entries)
 
     def check(self, value):
         latest_bit_array = self._get_latest_bit_array()
