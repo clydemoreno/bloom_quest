@@ -1,27 +1,38 @@
 import hashlib
 import math
 from array import array 
+from bloom_filter_array import BloomFilterArray
+
+def custom_hash(val, seed):
+    hash_val = hashlib.sha256(val.encode() + bytes([seed])).hexdigest() 
+    return int(hash_val, 16)
+
 class BloomFilter:
-    def __init__(self, item_count, prob):
+    def __init__(self, item_count, prob, hash_function=None):
         self.size = self.get_size(item_count, prob)
         self.hash_count = self.get_hash_count(self.size,item_count)
-        # switch to a fixed size array to reduce memory footprint
-        # 'b' is the typecode for signed char (which is used to represent boolean values)
-        self.bit_array =  array('b',[False] * self.size)  
-    def _hash(self, value, seed):
-        hash_val = hashlib.sha256(value.encode() + bytes([seed])).hexdigest()
-        return int(hash_val, 16) % self.size
+        self.hash_function = hash_function if hash_function else self.default_hash
+        # self.hash_function = self.default_hash
+        #switched to fixed np array for faster vectorized operations
+        self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)  # Adjust the size and initialization as needed
+    
+    
+    def default_hash(self, value, seed):        
+        return custom_hash(value,seed) % self.size
+        # return hash_value
+
+    def update_array(self, value):
+        self.bf_array.write(value)
     
     def add(self, value):
         for seed in range(self.hash_count):
-            index = self._hash(value, seed)
-            self.bit_array[index] = True
-    
+            index = self.hash_function(value, seed)
+            self.bf_array.array[index] = True
 
     def check(self, value):
         for seed in range(self.hash_count):
-            index = self._hash(value, seed)
-            if not self.bit_array[index]:
+            index = self.hash_function(value, seed)
+            if not self.bf_array.read(index):
                 return False
         return True
 

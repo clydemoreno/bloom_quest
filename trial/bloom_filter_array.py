@@ -18,8 +18,10 @@ class BloomFilterArray:
                 return None
 
     def write(self, new_array):
-        with self.lock:
-            if len(new_array) == self.size:
-                self.array = np.array(new_array, dtype=np.int32)
-            else:
-                print(f"New array must have size {self.size}")
+            with self.lock:
+                if isinstance(new_array, np.ndarray) and new_array.shape == (self.size,):
+                    self.array = new_array.astype(np.int32)
+                elif isinstance(new_array, list) and len(new_array) == self.size:
+                    self.array = np.array(new_array, dtype=np.int32)
+                else:
+                    print(f"New array must have size {self.size} and be a NumPy array or a list of the correct size")

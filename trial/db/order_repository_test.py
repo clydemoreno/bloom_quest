@@ -21,6 +21,7 @@ async def test_get_order_by_id(order_id):
     config_loader = AsyncConfigLoader('../async/config.json')
     config_data = await config_loader.load_config_async()
     db_params = config_data['database']
+    
     order_repository = OrderRepository(db_params)
 
     try:

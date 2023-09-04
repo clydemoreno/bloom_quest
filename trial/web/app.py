@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-import json
 import sys
 import logging
 # sys.path.append('../async/')

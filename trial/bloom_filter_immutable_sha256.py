@@ -1,52 +1,29 @@
 import hashlib
 import math
 from array import array 
+from bloom_filter_array import BloomFilterArray
 
 MAX_ENTRIES = 10  # Maximum number of entries allowed
 class BloomFilter:
     def __init__(self, item_count, prob):
         self.size = self.get_size(item_count, prob)
         self.hash_count = self.get_hash_count(self.size, item_count)
-        self.entries = [(0, array('b', [False] * self.size))]
-        print(self.entries)
+        self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)  # Adjust the size and initialization as needed
 
     def _hash(self, value, seed):
         hash_val = hashlib.sha256(value.encode() + bytes([seed])).hexdigest()
         return int(hash_val, 16) % self.size
 
-    def add_entry(self, value, timestamp):
-        new_bit_array = self._create_new_bit_array(value)
-        self.entries.append((timestamp, new_bit_array))
-        self._limit_entries()
-        print(self.entries)
+    def add_entry(self, value):
+        self.bf_array.write(value)
 
     def check(self, value):
-        latest_bit_array = self._get_latest_bit_array()
-        if latest_bit_array:
-            for seed in range(self.hash_count):
-                index = self._hash(value, seed)
-                if not latest_bit_array[index]:
-                    return False
-            return True
-        return False
-
-    def _get_latest_bit_array(self):
-        if self.entries:
-            latest_entry = max(self.entries, key=lambda entry: entry[0])
-            return latest_entry[1]
-        return None
-
-    def _create_new_bit_array(self, value):
-        new_bit_array = array('b', [False] * self.size)
+        
         for seed in range(self.hash_count):
             index = self._hash(value, seed)
-            new_bit_array[index] = True
-        return new_bit_array
-
-    def _limit_entries(self):
-        if len(self.entries) > MAX_ENTRIES:
-            self.entries = self.entries[-MAX_ENTRIES:]
-
+            if not self.bf_array.read(index):
+                return False
+        return True
 
     @classmethod
     def get_size(self, n, p):
