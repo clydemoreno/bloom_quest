@@ -54,3 +54,8 @@ Convention. Event driven, concurrent, SOLID principles. Clean architecture. Test
 7. use worker threads to process chunk of data coming
 8. Use abstract classes to enforce contract. Gives ability to switch different implementation
 9. Use of decorators to add functionality. 
+10. Use binary data where it's applicable. 
+11. Compression and Signature validation. 
+12. Use the right hashing function for the job to balance collision and speed.
+13. Use sampling instead of full data when applies. 
+14. Self diagnostics is built-in

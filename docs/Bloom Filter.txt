@@ -76,7 +76,7 @@ another alternative to double buffer
 LRUCache using concurrent futures in python
 https://chat.openai.com/share/1c771226-c8bb-40d6-8dd5-6cb87838bee0
 
-
+NP Array vs fixed array
 Vectorized operations is 44X faster in bitwise operations especially larget bit arrays
 
 basic huffman compression vs gzip 10000 bit array
@@ -84,8 +84,13 @@ basic huffman compression vs gzip 10000 bit array
 vs 6x comp ratio with 0.5 sec 
 33% smaller and 10x faster
 
+Pub Sub 
 Async Ran 4 tests 21.6
 Sync Ran 4 tests 3.4
+
+web response test.  2/3 faster
+Async 2 seconds
+Sync 6 seconds
 
 Test murmur vs sha256 vs md5 vs basic hashing
 Create abstract classes for all of them
@@ -93,3 +98,14 @@ Factory pattern.  add to a cache.
 Create a hash key to get the right concrete class
 
 create an abstract class for orderrepository
+implement redis, dynamodb, mysqldb
+
+Make ThreadSafeArray the parent. 
+Tested memory leak with double buffer. 
+Switch to np array
+
+Bloom filter. 
+simualted false positives and true negatives
+add unit test to check if within the +- 1.0
+
+Add all unit tests and integration tests in parallel
