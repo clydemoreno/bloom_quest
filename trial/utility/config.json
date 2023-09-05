@@ -11,6 +11,11 @@
         "path": "../data",
         "file_name": "data"
 
+    }, 
+    "bloom_filter": {
+        "size": 30,
+        "false_positive_probability": 0.05
+
     }
   
 }

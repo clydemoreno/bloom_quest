@@ -38,6 +38,9 @@ flask:
 messaging_test:
 	python3 -m unittest async_messaging_test.py
 
+test:
+	pytest -k "*_test.py"
+
 
 # Default target
 default: up

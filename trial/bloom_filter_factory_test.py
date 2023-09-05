@@ -2,24 +2,34 @@
 import unittest
 import asyncio
 import sys
+from pathlib import Path
 sys.path.append('./async')
 
 # from async_config_loader import AsyncConfigLoader
 
 from bloom_filter_factory import BloomFilterFactory
-from async_config_loader import AsyncConfigLoader
+# from async_config_loader import AsyncConfigLoader
+
+parent_dir = Path(__file__).resolve().parent
+# Add the 'messaging' directory to sys.path
+sys.path.append(str(parent_dir / 'utility'))
+from load_config import load_config
+
+
 
 class TestBloomFilter(unittest.TestCase):
     async def asyncSetUp(self):
+        pass
         # Load configuration data asynchronously
-        config_loader = AsyncConfigLoader('./async/config.json')
-        self.config_data = await config_loader.load_config_async()
+        # config_loader = AsyncConfigLoader('./async/config.json')
+        # self.config_data = await config_loader.load_config_async()
+        self.config_data = load_config
     
     def test_bloom_filter(self):
         # Ensure that the asyncSetUp method has completed before creating the BloomFilter
-        asyncio.run(self.asyncSetUp())
+        # asyncio.run(self.asyncSetUp())
 
-        # Create a BloomFilter instance using the factory
+        # # Create a BloomFilter instance using the factory
         bloom_filter = BloomFilterFactory.create_from_config(self.config_data)
 
         # Test the BloomFilter with integer data
@@ -35,9 +45,4 @@ class TestBloomFilter(unittest.TestCase):
         self.assertTrue(bloom_filter.check("apple"))  # Should return True
         self.assertTrue(bloom_filter.check("orange") != True)  # Should return False
 
-# if __name__ == "__main__":
-#     # Make the main function async
-#     async def main():
-#         unittest.main()
 
-#     asyncio.run(main())

@@ -3,12 +3,19 @@ import math
 import numpy as np
 from array import array 
 from bloom_filter_array import BloomFilterArray
-import sys
-sys.path.append("./messaging")
+from pathlib import Path
 
+import sys
+# Get the current script's directory
+async_obs_dir = Path(__file__).resolve().parent
+# Add the 'messaging' directory to sys.path
+sys.path.append(str(async_obs_dir / 'messaging'))
 from IAsyncObserver import IAsyncObserver
 
-sys.path.append("./reader")
+
+# Get the current script's directory
+reader_dir = Path(__file__).resolve().parent
+sys.path.append(str(reader_dir / 'reader'))
 from read_array_with_timestamp import load_array
 
 def custom_hash(val: str, seed: int) -> int:
