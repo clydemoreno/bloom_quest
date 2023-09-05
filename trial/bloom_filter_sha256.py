@@ -46,6 +46,18 @@ class BloomFilter (IAsyncObserver):
                 return False
         return True
 
+    def default_hash(self, value, seed):
+        return custom_hash(value, seed) % self.size
+        
+
+    def update_array(self, value):
+        self.bf_array.write(value)
+
+    def add(self, value):
+        for seed in range(self.hash_count):
+            index = self.hash_function(value, seed)
+            self.bf_array.array[index] = 1
+
     @classmethod
     def get_size(self, n, p):
         '''

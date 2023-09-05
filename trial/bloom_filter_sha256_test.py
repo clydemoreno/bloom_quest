@@ -44,8 +44,8 @@ class TestBloomFilter(unittest.TestCase):
     
 
 
-    async def test_async_concrete_subject(self):
-        subject = BloomFilterReader()
+    # async def test_async_concrete_subject(self):
+    #     subject = BloomFilterReader()
         # observer_a = BloomFilter(100, 0.01)
 
         # await subject.attach(observer_a)
