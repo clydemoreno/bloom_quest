@@ -12,7 +12,7 @@ class TestLoadArray(unittest.TestCase):
     def setUp(self):
         # Create a temporary directory for testing
         self.temp_dir = tempfile.TemporaryDirectory()
-        self.temp_dir_path = Path(self.temp_dir.name)
+        self.temp_dir_path = self.temp_dir.name
 
     def tearDown(self):
         # Clean up the temporary directory
@@ -24,7 +24,7 @@ class TestLoadArray(unittest.TestCase):
         for i in range(1, 6):
             timestamp = time.strftime("%Y%m%d%H%M%S")
             file_name = f"{file_name_pattern}_{timestamp}.npy"
-            file_path = self.temp_dir_path / file_name
+            file_path = os.path.join(self.temp_dir_path, file_name)
             np.save(file_path, np.array([i]))
 
         # Load the latest array

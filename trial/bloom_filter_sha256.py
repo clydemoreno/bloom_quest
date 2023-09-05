@@ -7,15 +7,14 @@ from pathlib import Path
 
 import sys
 # Get the current script's directory
-async_obs_dir = Path(__file__).resolve().parent
+parent_dir = Path(__file__).resolve().parent
 # Add the 'messaging' directory to sys.path
-sys.path.append(str(async_obs_dir / 'messaging'))
+sys.path.append(str(parent_dir / 'messaging'))
 from IAsyncObserver import IAsyncObserver
 
 
 # Get the current script's directory
-reader_dir = Path(__file__).resolve().parent
-sys.path.append(str(reader_dir / 'reader'))
+sys.path.append(str(parent_dir / 'reader'))
 from read_array_with_timestamp import load_array
 
 def custom_hash(val: str, seed: int) -> int:
@@ -40,11 +39,13 @@ class BloomFilter (IAsyncObserver):
     
     async def update(self, message):
         print(f"AsyncConcreteObserverA received message: {message}")
-
         file_name_pattern = "data"
         # Load the latest array
-        latest_loaded_array = load_array(self.temp_dir_path, file_name_pattern)
+        latest_loaded_array = load_array(str(parent_dir / 'data') , file_name_pattern)
         print(latest_loaded_array)
+        #need to do validation
+        self.update_array(latest_loaded_array)
+        
 
     def check(self, value):
         for seed in range(self.hash_count):

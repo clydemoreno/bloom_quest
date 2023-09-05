@@ -3,11 +3,24 @@ import asyncio
 import sys
 import io
 import contextlib
+
+from pathlib import Path
+parent_dir = Path(__file__).resolve().parent
+print (parent_dir.parent)
+
 sys.path.append("../messaging")
+# Add the 'messaging' directory to sys.path
+sys.path.append(str(parent_dir.parent / 'messaging'))
+
+# from IAsyncSubject import IAsyncSubject
+
+
 from IAsyncSubject import IAsyncSubject
 
 from concrete_async_observers import AsyncConcreteObserverA, AsyncConcreteObserverB
+
 from bloom_filter_reader import BloomFilterReader
+
 import time
 
 
