@@ -17,7 +17,6 @@ async def main():
             # Example query execution
             await cur.execute("SELECT * FROM ORDERS")
             result = await cur.fetchall()
-            print(result)
 
 # Running the asyncio event loop
 loop = asyncio.get_event_loop()

@@ -1,8 +1,11 @@
 import json
-from async_file import AsyncFile  # Import your AsyncFile class
+from async_file import AsyncFile
+from pathlib import Path  # Import pathlib for working with paths
 
 async def load_config_async():
-    async with AsyncFile('config.json', 'r') as json_file:
+    config_file_path = Path(__file__).resolve().parent / 'config.json'
+
+    async with AsyncFile(config_file_path, 'r') as json_file:
         content = await json_file.read()
-        config_data = json.load(content)
+        config_data = json.loads(content)
     return config_data
