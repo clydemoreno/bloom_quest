@@ -1,0 +1,40 @@
+import random
+import time
+import matplotlib.pyplot as plt
+
+# Constants
+cache_hit_latency_range = (10, 20)  # Latency range for cache hit in ms
+cache_miss_latency_range = (60, 90)  # Latency range for cache miss in ms
+num_trials = 10000
+
+# Create lists to store hit probabilities and corresponding hit rates
+hit_probabilities = []
+hit_rates = []
+
+# Simulate cache access for varying hit probabilities
+for hit_probability in range(10, 91, 10):  # Vary from 10% to 90%
+    hit_probability = hit_probability / 100.0  # Convert to decimal
+    cache_hits = 0
+    cache_misses = 0
+
+    for _ in range(num_trials):
+        if random.random() < hit_probability:
+            latency = random.randint(*cache_hit_latency_range)
+            time.sleep(latency / 1000)
+            cache_hits += 1
+        else:
+            latency = random.randint(*cache_miss_latency_range)
+            time.sleep(latency / 1000)
+            cache_misses += 1
+
+    hit_rate = cache_hits / num_trials
+    hit_probabilities.append(hit_probability)
+    hit_rates.append(hit_rate)
+
+# Plot hit probabilities vs. hit rates
+plt.plot(hit_probabilities, hit_rates, marker='o')
+plt.title('Cache Hit Probability vs. Hit Rate')
+plt.xlabel('Cache Hit Probability')
+plt.ylabel('Hit Rate')
+plt.grid(True)
+plt.show()

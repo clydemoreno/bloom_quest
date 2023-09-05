@@ -1,0 +1,16 @@
+@startuml
+actor Client
+participant "Nginx Ingress Controller" as IngressController
+participant "Kubernetes Service" as KubernetesService
+participant "Python App (WSGI)" as WSGIApp
+database "Database" as Database
+
+Client -> IngressController: HTTP Request
+IngressController -> KubernetesService: Route Request
+KubernetesService -> WSGIApp: Forward Request
+WSGIApp -> Database: Query Database
+Database --> WSGIApp: Database Response
+WSGIApp --> KubernetesService: Response
+KubernetesService --> IngressController: Response
+IngressController --> Client: HTTP Response
+@enduml
