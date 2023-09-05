@@ -1,10 +1,13 @@
 import hashlib
 import math
-from array import array 
+# from array import array 
 from bloom_filter_array import BloomFilterArray
+import sys
+sys.path.append("./messaging")
+from IAsyncObserver import IAsyncObserver
 
 MAX_ENTRIES = 10  # Maximum number of entries allowed
-class BloomFilter:
+class BloomFilter (IAsyncObserver):
     def __init__(self, item_count, prob):
         self.size = self.get_size(item_count, prob)
         self.hash_count = self.get_hash_count(self.size, item_count)
@@ -53,6 +56,9 @@ class BloomFilter:
         '''
         k = (m/n) * math.log(2)
         return int(k)
+    #implement the abstract method
+    async def update(self, message):
+        print(f"Received message: {message}")
 
 
 

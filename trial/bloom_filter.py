@@ -42,6 +42,7 @@ def simulate_bloom_filter(expected_elements, false_positive_prob, num_trials):
     
     false_positives = 0
     true_negatives = 0
+    false_negatives = 0
 
     for _ in range(num_trials):
         # Generate random data items
@@ -53,12 +54,28 @@ def simulate_bloom_filter(expected_elements, false_positive_prob, num_trials):
             bloom_filter.insert(element)
             
         # Check false positive rate
-        for element in query_elements:
-            if bloom_filter.query(element):
-                if element not in true_elements:
+        # for element in query_elements:
+        #     if not bloom_filter.query(element):
+        #         if element not in true_elements:
+        #             true_negatives += 1
+        #     else:
+        #         if element not in true_elements:
+        #             false_positives += 1
+
+
+        for item in query_elements:
+            if not bloom_filter.query(item):
+                if item in true_elements:
+                    false_negatives += 1
+
+            else:
+                if item not in true_elements:
                     false_positives += 1
+                    
+
+
     
-    print(f"Expected True negatives: {true_negatives} count: {len(false_elements)}")
+    # print(f"Expected True negatives: {true_negatives} count: {len(false_elements)}")
 
     observed_false_positive_prob = false_positives / (num_trials * expected_elements)
     return observed_false_positive_prob
@@ -67,7 +84,7 @@ def simulate_bloom_filter(expected_elements, false_positive_prob, num_trials):
 # Simulation parameters
 expected_elements = 1000
 false_positive_prob = 0.01  # 1% false positive probability
-num_trials = 1
+num_trials = 100
 
 observed_false_positive_prob = simulate_bloom_filter(expected_elements, false_positive_prob, num_trials)
 

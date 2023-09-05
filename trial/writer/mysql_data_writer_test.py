@@ -32,6 +32,9 @@ class TestMySqlDataRepository(unittest.IsolatedAsyncioTestCase):  # Change the b
         total_records = await self.repository.get_record_count()
         self.assertGreater(total_records, 0)
 
+    async def test_build_array(self):
+        ids = await self.repository.build_array()
+
 
 if __name__ == '__main__':
     unittest.main()

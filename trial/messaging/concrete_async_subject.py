@@ -1,4 +1,4 @@
-from IAsyncObserver import IAsyncSubject
+from IAsyncSubject import IAsyncSubject
 import asyncio
 
 class AsyncConcreteSubject(IAsyncSubject):

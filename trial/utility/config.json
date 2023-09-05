@@ -6,6 +6,11 @@
         "password": "mysecretpassword",
         "db": "mydb"
     
+    },
+    "data": {
+        "path": "../data",
+        "file_name": "data"
+
     }
   
 }

@@ -1,6 +1,6 @@
-from observer import Subject
+from IAsyncSubject import IAsyncSubject
 
-class ConcreteSubject(Subject):
+class ConcreteSubject(IAsyncSubject):
     def __init__(self):
         self._observers = []
 

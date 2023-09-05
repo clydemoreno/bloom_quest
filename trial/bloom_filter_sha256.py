@@ -1,13 +1,28 @@
 import hashlib
 import math
+import numpy as np
 from array import array 
 from bloom_filter_array import BloomFilterArray
+import sys
+sys.path.append("./messaging")
 
-def custom_hash(val, seed):
-    hash_val = hashlib.sha256(val.encode() + bytes([seed])).hexdigest() 
+from IAsyncObserver import IAsyncObserver
+
+sys.path.append("./reader")
+from read_array_with_timestamp import load_array
+
+def custom_hash(val: str, seed: int) -> int:
+    if not isinstance(val, str):
+        val = str(val)    
+
+    hash_val = hashlib.sha256(val.encode() + bytes([seed])).hexdigest()
     return int(hash_val, 16)
 
-class BloomFilter:
+# def _hash( item, seed):
+#     return hash(item + str(seed)) 
+
+
+class BloomFilter (IAsyncObserver):
     def __init__(self, item_count, prob, hash_function=None):
         self.size = self.get_size(item_count, prob)
         self.hash_count = self.get_hash_count(self.size,item_count)
@@ -16,18 +31,13 @@ class BloomFilter:
         #switched to fixed np array for faster vectorized operations
         self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)  # Adjust the size and initialization as needed
     
-    
-    def default_hash(self, value, seed):        
-        return custom_hash(value,seed) % self.size
-        # return hash_value
+    async def update(self, message):
+        print(f"AsyncConcreteObserverA received message: {message}")
 
-    def update_array(self, value):
-        self.bf_array.write(value)
-    
-    def add(self, value):
-        for seed in range(self.hash_count):
-            index = self.hash_function(value, seed)
-            self.bf_array.array[index] = True
+        file_name_pattern = "data"
+        # Load the latest array
+        latest_loaded_array = load_array(self.temp_dir_path, file_name_pattern)
+        print(latest_loaded_array)
 
     def check(self, value):
         for seed in range(self.hash_count):
@@ -35,7 +45,6 @@ class BloomFilter:
             if not self.bf_array.read(index):
                 return False
         return True
-
 
     @classmethod
     def get_size(self, n, p):
@@ -65,6 +74,8 @@ class BloomFilter:
         '''
         k = (m/n) * math.log(2)
         return int(k)
+    #implement the abstract method
+
 
 # Example usage
 # bloom_filter = BloomFilter(100, 3)

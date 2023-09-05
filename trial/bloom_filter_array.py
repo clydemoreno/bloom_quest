@@ -5,9 +5,9 @@ class BloomFilterArray:
     def __init__(self, size, initialize_with_ones=False):
         self.size = size
         if initialize_with_ones:
-            self.array = np.ones(size, dtype=np.int32)
+            self.array = np.ones(self.size, dtype=np.int32)
         else:
-            self.array = np.zeros(size, dtype=np.int32)
+            self.array = np.zeros(self.size, dtype=np.int32)
         self.lock = threading.Lock()
 
     def read(self, index):
