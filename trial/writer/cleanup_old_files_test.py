@@ -13,8 +13,8 @@ class TestCleanupOldFiles(unittest.TestCase):
 
             # Create some test files with filenames containing timestamps
             today = datetime.now()
-            old_date = today - timedelta(days=2)
-            older_date = today - timedelta(days=3)
+            old_date = today - timedelta(days=3)
+            older_date = today - timedelta(days=4)
 
             file1_name = f'file1_{old_date.strftime("%Y%m%d%H%M%S")}.txt'
             file2_name = f'file2_{today.strftime("%Y%m%d%H%M%S")}.txt'
@@ -32,8 +32,8 @@ class TestCleanupOldFiles(unittest.TestCase):
             cleanup_old_files(temp_dir_path, days_threshold=1)
 
             # Verify that only file2 should remain (newer than 1 day)
-            self.assertTrue(file1_path.exists())
-            self.assertFalse(file2_path.exists())
+            self.assertFalse(file1_path.exists())
+            self.assertTrue(file2_path.exists())
             self.assertFalse(file3_path.exists())
 
 if __name__ == '__main__':
