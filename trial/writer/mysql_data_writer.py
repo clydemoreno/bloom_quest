@@ -15,6 +15,8 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from bloom_filter_sha256 import BloomFilter
 
 # Import your custom utility functions/modules with pathlib
+sys.path.append(str(Path(__file__).resolve().parent))
+
 from save_array_with_timestamp import save_array_with_timestamp
 from cleanup_old_files import cleanup_old_files
 
