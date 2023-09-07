@@ -1,22 +1,15 @@
 import time
-import psutil
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from pathlib import Path
+import psutil
 import threading
-
-class EventHandler(FileSystemEventHandler):
-    def __init__(self, folder_path: str, callback: any):
-        self.callback = callback
-        self.file_observer = Observer()
-        self.file_observer.schedule(self, path=folder_path, recursive=False)
-        self.file_observer.start()
-
+from pathlib import Path
+class MyHandler(FileSystemEventHandler):
     def on_created(self, event):
         if event.is_directory:
-            return
+            return  # Ignore directory creation events
         print(f"File created: {event.src_path}")
-        self.callback(event.src_path)
+
 
 class MemoryMonitor(threading.Thread):
     def __init__(self, interval=3):
@@ -40,21 +33,30 @@ class MemoryMonitor(threading.Thread):
     def stop(self):
         self.stop_event.set()
 
+
 if __name__ == "__main__":
+    # Define the directory to monitor
     parent_dir = Path(__file__).resolve().parent
     folder_to_watch = str(parent_dir)
-
-    event_handler = EventHandler(folder_to_watch, lambda x: None)  # Dummy callback
     memory_monitor = MemoryMonitor()
 
-    print(f"Listening for file creation events in {folder_to_watch}. Press Ctrl+C to stop.")
+
+    # Create an observer and attach the event handler
+    observer = Observer()
+    observer.schedule(MyHandler(), path=folder_to_watch, recursive=False)
+
 
     try:
+        # Start monitoring
+        observer.start()
+        print(f"Watching for file creation events in {folder_to_watch}. Press Ctrl+C to stop.")
         memory_monitor.start()
+
         while True:
-            pass
+            time.sleep(1)
     except KeyboardInterrupt:
-        event_handler.file_observer.stop()
-        event_handler.file_observer.join()
-        memory_monitor.stop()
-        memory_monitor.join()
+        pass
+
+    # Stop and join the observer to terminate the monitoring gracefully
+    observer.stop()
+    observer.join()

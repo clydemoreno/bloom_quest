@@ -15,16 +15,20 @@ import asyncio
 
 from file_event_listener import EventHandler  
 
+parent_dir = Path(__file__).resolve().parent
 
 class BloomFilterReader(IAsyncSubject):
-    def __init__(self):
+    def __init__(self,folder_to_watch):
         def callback(src_path):
             self.callback_called = True
             src_path = Path(src_path).resolve()  # Normalize the path
-            self.notify(src_path)
+            print("Notifying Observer/s")
+             
+            asyncio.run( self.notify(src_path))
 
         self._observers = []
-        self.file_listener = EventHandler(callback)
+        self.file_listener = EventHandler(folder_to_watch, callback)
+        
 
     async def attach(self, observer):
         if observer not in self._observers:

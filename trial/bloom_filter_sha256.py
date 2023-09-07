@@ -38,7 +38,7 @@ class BloomFilter (IAsyncObserver):
         self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)  # Adjust the size and initialization as needed
     
     async def update(self, message):
-        print(f"AsyncConcreteObserverA received message: {message}")
+        print(f"Bloom filter received message: {message}")
         file_name_pattern = "data"
         # Load the latest array
         latest_loaded_array = load_array(str(parent_dir / 'data') , file_name_pattern)
@@ -65,6 +65,7 @@ class BloomFilter (IAsyncObserver):
         for seed in range(self.hash_count):
             index = self.hash_function(value, seed)
             self.bf_array.array[index] = 1
+
 
     @classmethod
     def get_size(self, n, p):

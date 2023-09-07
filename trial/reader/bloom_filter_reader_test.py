@@ -6,13 +6,17 @@ import contextlib
 
 from pathlib import Path
 parent_dir = Path(__file__).resolve().parent
-print (parent_dir.parent)
-
-sys.path.append("../messaging")
+print ("parent_dir: ", parent_dir.parent)
+# sys.path.append("../messaging")
 # Add the 'messaging' directory to sys.path
-sys.path.append(str(parent_dir.parent / 'messaging'))
+parent_of_parent = parent_dir.parent
+sys.path.append(str(parent_of_parent / 'messaging'))
 
 # from IAsyncSubject import IAsyncSubject
+
+sys.path.append(str(parent_of_parent))
+
+from utility.load_config import load_config
 
 
 from IAsyncSubject import IAsyncSubject
@@ -26,7 +30,10 @@ import time
 
 class TestAsyncConcreteSubject(unittest.IsolatedAsyncioTestCase):
     async def test_async_concrete_subject(self):
-        subject = BloomFilterReader()
+        config_data = load_config()
+        folder_path = str (parent_of_parent / config_data["data"]["path"])
+        print ("folder to watch: ", folder_path)
+        subject = BloomFilterReader(folder_path)
         observer_a = AsyncConcreteObserverA()
         observer_b = AsyncConcreteObserverB()
 

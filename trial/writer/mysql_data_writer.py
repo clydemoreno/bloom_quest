@@ -1,6 +1,7 @@
 import sys
 import aiomysql
 import abc
+import random
 from datetime import datetime
 import numpy as np
 from pathlib import Path  # Import pathlib.Path for path handling
@@ -26,6 +27,7 @@ class MySqlDataWriter(IDataWriter):
     def __init__(self, config_data):
         self.db_params = config_data["database"]
         self.data = config_data["data"]
+        self.bloom_filter_parameters = config_data["bloom_filter"]
 
     async def select_ids_with_paging(self, page_size, page_number):
         return [10, 2]
@@ -42,9 +44,10 @@ class MySqlDataWriter(IDataWriter):
 
     async def build_array(self):
         # Implement your logic to build the array here
-        ids = await self.get_all_ids()
-        bloom_filter = BloomFilter(len(ids), 0.05)
-        for item in ids:
+        self.ids = await self.get_all_ids()
+
+        bloom_filter = BloomFilter(len(self.ids), self.bloom_filter_parameters["false_positive_probability"])
+        for item in self.ids:
             bloom_filter.add(item)
 
         # Create a NumPy array (example)
@@ -59,15 +62,24 @@ class MySqlDataWriter(IDataWriter):
         save_array_with_timestamp(my_array, save_directory, file_name)
 
         cleanup_old_files(save_directory)
+        
+        return len(my_array)
 
-        # # Get the current timestamp
-        # timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    async def validate_bloom_filter_array(self, bf: BloomFilter):
+        false_elements = [str(random.randint(1001, 2000)) for _ in range(len(bf.bf_array.array)) ]
+        false_negatives = 0
+        false_positives = 1
 
-        # # Append the timestamp to the original file name
-        # file_name_with_timestamp = f"{file_name}_{timestamp}.npy"
+        for item in self.ids:
+            if not bf.check(item):
+                false_negatives += 1
 
-        # # Create the full path by joining the directory and file name
-        # save_path = save_directory / file_name_with_timestamp
+        for item in false_elements:
+            if bf.check(item + "pre_"): #this makes it unique and not in the true elements
+                false_positives += 1
+        false_positive_ratio = false_positives / (len(self.ids ) + len(bf.bf_array.array))
+        false_negatives_ratio = false_negatives / (len(self.ids ) + len(bf.bf_array.array))
+        print(f"false positives ratio: {false_positive_ratio}")
+        print(f"false negatives ratio: {false_negatives_ratio}")
 
-        # # Save the array to the specified path
-        # np.save(save_path, my_array)
+

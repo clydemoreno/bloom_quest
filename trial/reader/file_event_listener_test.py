@@ -25,10 +25,7 @@ class TestEventHandler(unittest.TestCase):
 
         self.callback_called = False
 
-        event_handler = EventHandler(callback)
-        observer = Observer()
-        observer.schedule(event_handler, path=str(self.temp_dir), recursive=False)
-        observer.start()
+        event_handler = EventHandler(str(self.temp_dir),callback)
 
         # Create a test file
         with self.file_path.open("w") as f:
@@ -40,8 +37,8 @@ class TestEventHandler(unittest.TestCase):
         # Check if the callback was called
         self.assertTrue(self.callback_called)
 
-        observer.stop()
-        observer.join()
+        event_handler.file_observer.stop()
+        event_handler.file_observer.join()
 
 
 if __name__ == "__main__":
