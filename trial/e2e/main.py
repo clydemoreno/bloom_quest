@@ -27,7 +27,7 @@ start_memory_usage = process.memory_info().rss / 1024  # in KB
 
 
 async def do_something(repository: IDataWriter):
-    # await repository.build_array()
+    await repository.build_array()
     print("Async build array completed. IDs:")
     # Calculate memory usage after running the script
     end_memory_usage = process.memory_info().rss / 1024  # in KB
