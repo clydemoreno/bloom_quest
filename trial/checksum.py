@@ -17,7 +17,7 @@ def checksum(bitarray: list):
         for j in range(len(chunk)):
             checksum[j] ^= chunk[j]
 
-        print(f"i:{i}, checksum: `{checksum}`")
+        # print(f"i:{i}, checksum: `{checksum}`")
     
     return checksum
 
@@ -128,10 +128,10 @@ class Test32BitXORChecksum(unittest.TestCase):
         return checksum
 
     # Example usage
-    input_string = "Hello, world!"
-    ascii_values = [ord(char) for char in input_string]
-    checksum = fletcher16(ascii_values)
-    print(f"Fletcher's checksum: {hex(checksum)}")
+    # input_string = "Hello, world!"
+    # ascii_values = [ord(char) for char in input_string]
+    # checksum = fletcher16(ascii_values)
+    # print(f"Fletcher's checksum: {hex(checksum)}")
 
 
 if __name__ == '__main__':

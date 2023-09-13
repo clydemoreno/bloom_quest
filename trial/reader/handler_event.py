@@ -12,7 +12,6 @@ class HandlerEvent:
 
     async def run_periodically(self):
         while self.running:
-            print("Running...")
             await asyncio.sleep(self.time_interval_seconds)  # Sleep for the specified interval
             async with self.lock:
                 if self.running:  # Check if still running after the sleep

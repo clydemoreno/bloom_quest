@@ -11,7 +11,7 @@ parent_dir = Path(__file__).resolve().parent
 # Add the 'messaging' directory to sys.path
 sys.path.append(str(parent_dir / 'messaging'))
 from IAsyncObserver import IAsyncObserver
-
+from checksum import checksum
 
 # Get the current script's directory
 sys.path.append(str(parent_dir / 'reader'))
@@ -59,7 +59,11 @@ class BloomFilter (IAsyncObserver):
         
 
     def update_array(self, value):
+        self.size = len(value)
         self.bf_array.write(value)
+        print(f"Updated array: {self.hash_count} ")
+        print(f"Updated size: {self.size}")
+        print("updated checksum",checksum(value.tolist()))
 
     def add(self, value):
         for seed in range(self.hash_count):
