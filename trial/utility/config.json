@@ -16,6 +16,12 @@
         "size": 30,
         "false_positive_probability": 0.05
 
-    }
+    },
+    "protobuf_data": {
+        "path": "data",
+        "file_name": "custom_data.protobuf"
+
+    }, 
+
   
 }

@@ -29,7 +29,7 @@ class TestCleanupOldFiles(unittest.TestCase):
             file3_path.touch()
 
             # Call the cleanup function with a threshold of 1 day
-            cleanup_old_files(temp_dir_path, days_threshold=1)
+            cleanup_old_files(temp_dir_path, minutes_threshold=1)
 
             # Verify that only file2 should remain (newer than 1 day)
             self.assertFalse(file1_path.exists())

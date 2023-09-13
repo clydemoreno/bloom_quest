@@ -30,6 +30,7 @@ class BloomFilter(IAsyncObserver):
         self.hash_count = self.get_hash_count(self.size, item_count)
         self.hash_function = hash_function if hash_function else self.default_hash
         self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)
+        
 
     async def update(self, message):
         print(f"Bloom filter received message: {message}")
@@ -49,6 +50,8 @@ class BloomFilter(IAsyncObserver):
         return custom_hash(value, seed) % self.size
 
     def update_array(self, value):
+        def validate_checksum():
+            pass
         self.size = len(value)
         self.bf_array.write(value)
         print(f"Updated array: {self.hash_count}")

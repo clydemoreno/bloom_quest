@@ -55,6 +55,8 @@ class MySqlDataWriter(IDataWriter):
         all_ids = await order_repository.count_records()
         return all_ids
 
+
+
     async def build_array(self):
         # Implement your logic to build the array here
         self.ids = await self.get_all_ids()
@@ -67,27 +69,22 @@ class MySqlDataWriter(IDataWriter):
             bloom_filter.add(item['ID'])
 
         validate_array(self.ids, bloom_filter, initial=True)
-    
 
-        # Create a NumPy array (example)
+        # Create a NumPy array from the Bloom filter
+        # my_
+        # array = np.array([bloom_filter.bf_array.array, checksum(bloom_filter.bf_array.array.tolist()), bloom_filter.hash_count])
+        cs = checksum(bloom_filter.bf_array.array.tolist())
         my_array = bloom_filter.bf_array.array
-        
-        print("checksum: ", checksum(my_array.tolist()))
-
         # Specify the directory and file name using pathlib.Path
         parent_dir = Path(__file__).resolve().parent.parent
         save_directory = parent_dir / self.data["path"]
-
         file_name = self.data['file_name']
 
-
-
         save_array_with_timestamp(my_array, save_directory, file_name)
-
         cleanup_old_files(save_directory)
 
-        
         return len(my_array)
+
 
 
 

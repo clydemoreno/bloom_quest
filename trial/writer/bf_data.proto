@@ -1,0 +1,7 @@
+syntax = "proto3";  // Use Protocol Buffers version 3 syntax
+
+message CustomData {
+    repeated int32 array = 1;
+    int32 hash_count = 2;
+    int32 array_length = 3;
+}
