@@ -35,6 +35,10 @@ class IBloomFilter:
 
     def get_hash_count(self, m, n):
         return self.filter.get_hash_count(m,n)
+    
+    async def update(self, bf):
+        pass
+
 
 
 # # Create instances of different Bloom Filter implementations

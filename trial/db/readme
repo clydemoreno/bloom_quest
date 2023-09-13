@@ -10,7 +10,10 @@ docker ps -a
 docker ps -aq --format "{{.Names}}"
 
 # get inside the container
-docker exec -it mysql-container bash
+docker exec -it 3a54ec603448 bash
+
+mysql -u root -p
+
 
 # copy files to docker
 docker cp /path/on/host/file_or_directory <container_id_or_name>:/path/in/container/

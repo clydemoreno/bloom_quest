@@ -66,7 +66,7 @@ class MySqlDataWriter(IDataWriter):
         for item in self.ids:
             bloom_filter.add(item['ID'])
 
-        # validate_array(bloom_filter)
+        validate_array(self.ids, bloom_filter, initial=True)
     
 
         # Create a NumPy array (example)
@@ -79,6 +79,8 @@ class MySqlDataWriter(IDataWriter):
         save_directory = parent_dir / self.data["path"]
 
         file_name = self.data['file_name']
+
+
 
         save_array_with_timestamp(my_array, save_directory, file_name)
 

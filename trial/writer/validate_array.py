@@ -10,6 +10,10 @@ from bloom_filter_sha256 import BloomFilter
 
 
 def validate_array(ids , bf:BloomFilter, initial=False):
+        if initial:
+            print("Validation before transfer")
+        else:
+            print("Validation after transfer")
         temp_false_elements = np.array([str(random.randint(100001, 200000)) for _ in range(len(ids)) ])
         true_elements = np.array([ str(item['ID']) for item in ids ])
 
@@ -22,6 +26,7 @@ def validate_array(ids , bf:BloomFilter, initial=False):
         false_positives = 0
         false_positive_ratio = 0
         true_negatives = 0
+        true_positives = 0
         
 
         # for item in false_elements:
@@ -36,27 +41,30 @@ def validate_array(ids , bf:BloomFilter, initial=False):
 
         for item in combined_elements:
             if not bf.check(item):
-                if item not in true_elements:
-                    true_negatives += 1
-
-            else:
-                if item not in true_elements:
-                    false_positives += 1
+                if item in true_elements:
+                    false_negatives += 1
 
 
-        # for item in combined_elements:
-        #     if not bf.check(item):
-        #         if item in true_elements:
-        #             false_negatives += 1
+        for item in true_elements:
+            if bf.check(item):
+                true_positives += 1
 
-        #     else:
-        #         if item not in true_elements:
-        #             false_positives += 1
+        
+        for item in combined_elements:
+            if bf.check(item) and item not in true_elements:
+                false_positives += 1
+            # else:
+            #     true_negatives += 1
 
 
         false_positive_ratio = false_positives / len(combined_elements)
-        false_negatives_ratio = false_negatives / len(false_elements)
-        true_negatives_ratio = true_negatives / len(false_elements)
+        true_positives_ratio = true_positives / len(true_elements)
+        false_negatives_ratio = false_negatives / len(combined_elements) 
+        
+        true_negatives_ratio = 1 - false_negatives_ratio 
+        # true_negatives_ratio = true_negatives / len(false_elements)
+
         print(f"Initial test: {initial} false positives ratio: {false_positive_ratio} TE: {len(true_elements)},FP: {false_positives}")
         print(f"false_negatives ratio: {false_negatives_ratio}, {false_negatives}, {len(false_elements)}")
         print(f"true negatives ratio: {true_negatives_ratio}")        
+        print(f"true positives ratio: {true_positives_ratio}")                

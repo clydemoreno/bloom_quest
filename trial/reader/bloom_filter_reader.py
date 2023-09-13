@@ -81,6 +81,7 @@ class BloomFilterReader(IAsyncSubject):
         
 
     async def attach(self, observer):
+        print(f"{observer} is attached")
         if observer not in self._observers:
             self._observers.append(observer)
 

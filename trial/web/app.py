@@ -1,53 +1,96 @@
 from flask import Flask, jsonify
 import sys
 import logging
-# sys.path.append('../async/')
-
-# from async_file import AsyncFile  # Import your AsyncFile class
-# from async_config_loader import AsyncConfigLoader
-
-sys.path.append('../db/')
-from order_repository import OrderRepository
-
-sys.path.append('../utility')
-from load_config import load_config
-
-sys.path.append('../')
-from bloom_filter_factory import BloomFilterFactory
-
+import asyncio
+from pathlib import Path
+import threading
 
 app = Flask(__name__)
-# Configure the logging level (you can adjust it as needed)
 app.logger.setLevel(logging.DEBUG)
+
+# Declare global variables for bf and br_subject
+bf = None
+br_subject = None
+periodic_task = None
+
+# Create a thread for the periodic task
+periodic_thread = None
+
+# Get the root directory of your project (two levels up from web/app.py)
+project_root = Path(__file__).resolve().parent.parent
+
+# Add your project's root directory to sys.path
+sys.path.append(str(project_root))
+
+from db.order_repository import OrderRepository
+from utility.load_config import load_config
+from reader.bloom_filter_reader import BloomFilterReader
+# from bloom_filter_factory import BloomFilterFactory
+from web.periodic_task import PeriodicTask
+from bloom_filter_sha256 import BloomFilter
 
 config_data = load_config()
 
+# Example usage:
+def my_callback(message):
+    print("my callback got called")
+    global br_subject
+    if br_subject is not None:
+        asyncio.run(br_subject.notify(f"Event callback executed. {message}"))
+
+# Custom context manager to perform setup only once
+class SetupContext:
+    def __enter__(self):
+        global bf
+        global br_subject
+        global periodic_task  # Use the periodic_task from the main module
 
 
-bf = BloomFilterFactory.create_from_config(config_data)
-bf.add("5")
+        if bf is None:
+            size = config_data["bloom_filter"]["size"]
+            fp = config_data["bloom_filter"]["false_positive_probability"]
+            bf = BloomFilter(size, fp)
+
+        if br_subject is None:
+            folder_path = str(project_root / config_data["data"]["path"])
+            print("folder to watch: ", folder_path)
+            br_subject = BloomFilterReader(folder_path)
+            asyncio.run(br_subject.attach(bf))
+
+        if periodic_task is None:
+            # Create a PeriodicTask instance with your callback
+            periodic_task = PeriodicTask(my_callback, interval_seconds=30)
+
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+# Call the setup context manager before the first request
+@app.before_request
+def before_request():
+    with SetupContext():
+        pass
 
 @app.route('/')
 async def get_config():
-    # config_loader = AsyncConfigLoader('../async/config.json')
-    # config_data = await config_loader.load_config_async()
     return jsonify(config_data)
 
 @app.route("/orders/<int:order_id>", methods=["GET"])
 async def get_order(order_id):
-    # config_loader = AsyncConfigLoader('../async/config.json')
-    # config_data = await config_loader.load_config_async()
     db_params = config_data['database']
     global bf
+    if bf is not None:
+        print("bf: ", bf.check(str(order_id)), bf.check(201) )
+        print(f"BF Size in flask is {bf.size}")
     if bf is not None and not bf.check(str(order_id)):
         return jsonify({"error": "Order not found"}), 404
     else:    
         order_repo = OrderRepository(db_params)
-        order = await order_repo.get_order_by_id(order_id)
+        order = asyncio.run(order_repo.get_order_by_id(order_id))
         if order:
             return jsonify(order)
         else:
             return jsonify({"error": "Order not found"}), 404
-    # return "end"
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')  # Add any other desired parameters
+    app.run(debug=True, host='0.0.0.0')
