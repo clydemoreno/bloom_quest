@@ -1,5 +1,6 @@
 import abc
 
+
 class IHashFunction(abc.ABC):
 
     @abc.abstractmethod

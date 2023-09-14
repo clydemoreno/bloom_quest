@@ -75,7 +75,7 @@ class MySqlDataWriter(IDataWriter):
         # array = np.array([bloom_filter.bf_array.array, checksum(bloom_filter.bf_array.array.tolist()), bloom_filter.hash_count])
         cs = checksum(bloom_filter.bf_array.array.tolist())
         my_array = bloom_filter.bf_array.array
-        # Specify the directory and file name using pathlib.Path
+        # Specify the directory and file nxame using pathlib.Path
         parent_dir = Path(__file__).resolve().parent.parent
         save_directory = parent_dir / self.data["path"]
         file_name = self.data['file_name']

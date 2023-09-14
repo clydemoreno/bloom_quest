@@ -34,9 +34,13 @@ config_data = load_config()
 # Example usage:
 def my_callback(message):
     print("my callback got called")
+
+def temp_my_callback(message):
+    print("my callback got called")
     global br_subject
     if br_subject is not None:
         asyncio.run(br_subject.notify(f"Event callback executed. {message}"))
+
 
 # Custom context manager to perform setup only once
 class SetupContext:
@@ -50,6 +54,7 @@ class SetupContext:
             size = config_data["bloom_filter"]["size"]
             fp = config_data["bloom_filter"]["false_positive_probability"]
             bf = BloomFilter(size, fp)
+            asyncio.run( populate_bloom_filter(bf))
 
         if br_subject is None:
             folder_path = str(project_root / config_data["data"]["path"])
@@ -66,17 +71,25 @@ class SetupContext:
         pass
 
 # Call the setup context manager before the first request
+async def populate_bloom_filter(bf:BloomFilter):
+    global config_data
+    db_params = config_data["database"]
+    o = OrderRepository(db_params)
+    all_orders = await o.get_all_orders()
+    for order in all_orders:
+        bf.add(order['ID'])
+
 @app.before_request
 def before_request():
     with SetupContext():
         pass
 
 @app.route('/')
-async def get_config():
+def get_config():
     return jsonify(config_data)
 
 @app.route("/orders/<int:order_id>", methods=["GET"])
-async def get_order(order_id):
+def get_order(order_id):
     db_params = config_data['database']
     global bf
     if bf is not None:

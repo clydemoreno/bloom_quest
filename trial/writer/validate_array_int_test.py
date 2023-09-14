@@ -17,7 +17,7 @@ from bloom_filter_sha256 import BloomFilter
 def validate_with_bloom_filter():
 
 
-
+    db_params
 
     # Define a sample 'ids' list for testing
 

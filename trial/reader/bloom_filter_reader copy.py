@@ -15,7 +15,6 @@ import asyncio
 
 from file_event_listener import EventHandler  
 
-parent_dir = Path(__file__).resolve().parent
 
 class BloomFilterReader(IAsyncSubject):
     def __init__(self,folder_to_watch):

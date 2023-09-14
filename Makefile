@@ -41,6 +41,9 @@ messaging_test:
 test:
 	pytest .
 
+loadtest:
+	k6 run ./trial/e2e/loadtest.js
+
 
 # Default target
 default: up
