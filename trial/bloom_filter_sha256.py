@@ -65,6 +65,8 @@ class BloomFilter(IAsyncObserver):
 
     @classmethod
     def get_size(self, n, p):
+        # n = size of entries
+        # p = prob
         m = -(n * math.log(p)) / (math.log(2) ** 2)
         return int(m)
 

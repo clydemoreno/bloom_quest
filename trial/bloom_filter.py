@@ -19,7 +19,7 @@ class BloomFilter:
             
     def query(self, item):
         for i in range(self.num_hash_functions):
-            index = self._hash(item, i)
+            index = self._hash(item, i) 
             if not self.bit_array[index]:
                 return False
         return True
@@ -30,7 +30,8 @@ class BloomFilter:
         return m
     
     def calculate_number_of_hashes(self, m, n):
-        k = (n / m) * math.log(2)
+        # double check n/m vs m/n
+        k = (m / n) * math.log(2)
         return int(k)
 
 
