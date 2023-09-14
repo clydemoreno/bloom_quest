@@ -1,8 +1,22 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
+export const options = {
+  stages: [
+    { duration: '30s', target: 10 }, // Ramp up to 10 VUs over 30 seconds
+    { duration: '1m', target: 10 },  // Stay at 10 VUs for 1 minute
+    { duration: '30s', target: 100 }, // Ramp up to 100 VUs over 30 seconds
+    { duration: '1m', target: 100 },  // Stay at 100 VUs for 1 minute
+    { duration: '30s', target: 0 },   // Ramp down to 0 VUs over 30 seconds
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'], // Set a response time threshold
+  },
+};
+
 export default function () {
-  // Generate a random number to decide if it's below 201 or above
+  // Your script logic here
+
   const randomValue = Math.random();
 
   // Generate a random order ID based on the distribution
@@ -15,15 +29,16 @@ export default function () {
     randomOrderId = Math.floor(Math.random() * 9800) + 201;
   }
 
-  // Make an HTTP GET request with the random order ID
-  const url = `http://127.0.0.1:5000/orders/${randomOrderId}?usesbloom=1`;
-  const response = http.get(url);
 
-  // Check the response status code
+
+//   const randomOrderId = Math.floor(Math.random() * 9800) + 201;
+  const url = `http://127.0.0.1:5000/orders/${randomOrderId}?usebloom=0`;
+  const response = http.get(url);
   check(response, {
     'is status 200': (r) => r.status === 200,
     'is status 404': (r) => r.status === 404,
   });
-
-  sleep(0.5); // 0.5-second pause between requests
+  sleep(0.5);
 }
+
+
