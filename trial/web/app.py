@@ -3,7 +3,8 @@ import sys
 import logging
 import asyncio
 from pathlib import Path
-import threading
+# import threading
+from flask import request
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
@@ -88,22 +89,47 @@ def before_request():
 def get_config():
     return jsonify(config_data)
 
+# @app.route("/orders/<int:order_id>", methods=["GET"])
+# def get_order(order_id):
+#     db_params = config_data['database']
+#     global bf
+#     if bf is not None:
+#         print("bf: ", bf.check(str(order_id)), bf.check(201) )
+#         print(f"BF Size in flask is {bf.size}")
+#     if bf is not None and not bf.check(str(order_id)):
+#         return jsonify({"error": "Order not found"}), 404
+#     else:    
+#         order_repo = OrderRepository(db_params)
+#         order = asyncio.run(order_repo.get_order_by_id(order_id))
+#         if order:
+#             return jsonify(order)
+#         else:
+#             return jsonify({"error": "Order not found"}), 404
+
+
+
 @app.route("/orders/<int:order_id>", methods=["GET"])
 def get_order(order_id):
     db_params = config_data['database']
     global bf
-    if bf is not None:
-        print("bf: ", bf.check(str(order_id)), bf.check(201) )
+
+    use_bloom = request.args.get("usebloom")
+    if use_bloom == "1" and bf is not None:
+        print("bf: ", bf.check(str(order_id)), bf.check(201))
         print(f"BF Size in flask is {bf.size}")
-    if bf is not None and not bf.check(str(order_id)):
-        return jsonify({"error": "Order not found"}), 404
-    else:    
-        order_repo = OrderRepository(db_params)
-        order = asyncio.run(order_repo.get_order_by_id(order_id))
-        if order:
-            return jsonify(order)
-        else:
+
+        if not bf.check(str(order_id)):
             return jsonify({"error": "Order not found"}), 404
+
+    order_repo = OrderRepository(db_params)
+    order = asyncio.run(order_repo.get_order_by_id(order_id))
+
+    if order:
+        return jsonify(order)
+    else:
+        return jsonify({"error": "Order not found"}), 404
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
