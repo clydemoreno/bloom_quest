@@ -52,10 +52,7 @@ class SetupContext:
 
 
         if bf is None:
-            size = config_data["bloom_filter"]["size"]
-            fp = config_data["bloom_filter"]["false_positive_probability"]
-            bf = BloomFilter(size, fp)
-            asyncio.run( populate_bloom_filter(bf))
+            asyncio.run( populate_bloom_filter())
 
         if br_subject is None:
             folder_path = str(project_root / config_data["data"]["path"])
@@ -75,8 +72,10 @@ class SetupContext:
 async def populate_bloom_filter(bf:BloomFilter):
     global config_data
     db_params = config_data["database"]
+    fp = config_data["bloom_filter"]["false_positive_probability"]
     o = OrderRepository(db_params)
     all_orders = await o.get_all_orders()
+    bf = BloomFilter(len(all_orders), fp)
     for order in all_orders:
         bf.add(order['ID'])
 

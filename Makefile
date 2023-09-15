@@ -44,6 +44,11 @@ test:
 loadtest:
 	k6 run ./trial/e2e/loadtest.js
 
+loadtest_with_bloom:
+	k6 run ./trial/e2e/test_with_bloom.js
+
+loadtest_without_bloom:
+	k6 run ./trial/e2e/test_without_bloom.js
 
 # Default target
 default: up
