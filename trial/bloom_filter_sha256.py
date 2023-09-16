@@ -4,6 +4,7 @@ import numpy as np
 from array import array
 from bloom_filter_array import BloomFilterArray
 from pathlib import Path
+import copy
 
 import sys
 # Get the current script's directory
@@ -16,6 +17,8 @@ from checksum import checksum
 # Get the current script's directory
 sys.path.append(str(parent_dir / 'reader'))
 from read_array_with_timestamp import load_array
+from writer.use_proto_buf import load_data_from_file
+
 
 def custom_hash(val: str, seed: int) -> int:
     if not isinstance(val, str):
@@ -26,7 +29,8 @@ def custom_hash(val: str, seed: int) -> int:
 
 class BloomFilter(IAsyncObserver):
     def __init__(self, item_count, prob, hash_function=None):
-        self.size = self.get_size(item_count, prob)
+        self.prob = prob
+        self.size = self.get_size(item_count, self.prob)
         self.hash_count = self.get_hash_count(self.size, item_count)
         self.hash_function = hash_function if hash_function else self.default_hash
         self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)
@@ -35,9 +39,12 @@ class BloomFilter(IAsyncObserver):
     async def update(self, message):
         print(f"Bloom filter received message: {message}")
         file_name_pattern = "data"
-        latest_loaded_array = load_array(str(parent_dir / 'data'), file_name_pattern)
-        print(latest_loaded_array)
-        self.update_array(latest_loaded_array)
+        # latest_loaded_array = load_array(str(parent_dir / 'data'), file_name_pattern)
+        # print(latest_loaded_array)
+
+        latest_loaded_array, loaded_hash_count, loaded_array_length = load_data_from_file(str(parent_dir / 'data'), file_name_pattern)
+        print("Loaded latest array")
+        self.update_array(latest_loaded_array, loaded_hash_count, loaded_array_length)
 
     def check(self, value):
         for seed in range(self.hash_count):
@@ -49,14 +56,23 @@ class BloomFilter(IAsyncObserver):
     def default_hash(self, value, seed):
         return custom_hash(value, seed) % self.size
 
-    def update_array(self, value):
-        def validate_checksum():
-            pass
-        self.size = len(value)
-        self.bf_array.write(value)
+    def update_array(self, array, hash_count, array_length):
+        self.size = array_length
+
+        # fp2 = config_data["bloom_filter"]["false_positive_probability"]
+        # size = config_data["bloom_filter"]["size"]
+
+        # Copy over the bitarray from bloomfilter1 to bloomfilter2
+        
+        self.size = self.get_size(array_length, self.prob)
+        self.hash_count = self.get_hash_count(self.size, array_length)
+        self.bf_array = BloomFilterArray(self.size, initialize_with_ones=False)
+        self.bf_array.array = copy.deepcopy(array)
+
         print(f"Updated array: {self.hash_count}")
         print(f"Updated size: {self.size}")
-        print("updated checksum", checksum(value.tolist()))
+        # print("updated checksum", checksum(array.tolist()))
+
 
     def add(self, value):
         for seed in range(self.hash_count):

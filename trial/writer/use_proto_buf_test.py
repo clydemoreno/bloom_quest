@@ -8,8 +8,7 @@ from pathlib import Path
 current_directory = Path(__file__).resolve().parent
 sys.path.append(str(current_directory))
 
-from bf_data_pb2 import CustomData 
-
+# Import the Protobuf message from the refactored code
 from use_proto_buf import save_data_to_file, load_data_from_file
 
 class TestSaveLoadDataToFile(unittest.TestCase):
@@ -24,17 +23,17 @@ class TestSaveLoadDataToFile(unittest.TestCase):
             # Convert the temporary directory path to a Path object
             temp_dir_path = Path(temp_dir)
 
-            # Specify the file name
-            file_name = "custom_data.protobuf"
+            # Specify the file name pattern (without the timestamp)
+            file_name_pattern = "custom_data"
 
-            # Save the sample data to a file
+            # Save the sample data to a file with a timestamp in the filename
             save_data_to_file(
-                sample_array, sample_hash_count, sample_array_length, temp_dir_path, file_name
+                sample_array, sample_hash_count, sample_array_length, temp_dir_path, file_name_pattern
             )
 
-            # Load the data from the file
+            # Load the latest data from the file with a timestamp in the filename
             loaded_array, loaded_hash_count, loaded_array_length = load_data_from_file(
-                temp_dir_path / file_name
+                temp_dir_path, file_name_pattern
             )
 
             # Verify the loaded data

@@ -26,6 +26,11 @@ from data_writer_interface import IDataWriter
 
 from validate_array import validate_array
 
+from bf_data_pb2 import CustomData 
+
+from use_proto_buf import save_data_to_file, load_data_from_file
+
+
 # folder_path = os.path.join(parent_dir, folder_to_concatenate)
 # sys.path.append(folder_path)
 # Now you can import a module from the "utility" folder
@@ -33,6 +38,8 @@ from validate_array import validate_array
 sys.path.append(str(Path(__file__).resolve().parent.parent / "utility"))  # Adjust the path as needed
 
 from load_config import load_config
+
+
 
 from checksum import checksum
 
@@ -80,7 +87,13 @@ class MySqlDataWriter(IDataWriter):
         save_directory = parent_dir / self.data["path"]
         file_name = self.data['file_name']
 
-        save_array_with_timestamp(my_array, save_directory, file_name)
+        # save_array_with_timestamp(my_array, save_directory, file_name)
+
+        # Save data to a protobuf file
+        save_data_to_file(
+            my_array.tolist(), bloom_filter.hash_count, len(self.ids), save_directory, file_name
+        )
+
         cleanup_old_files(save_directory)
 
         return len(my_array)

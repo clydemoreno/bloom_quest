@@ -33,51 +33,56 @@ from bloom_filter_sha256 import BloomFilter
 config_data = load_config()
 
 # Example usage:
-def my_callback(message):
+def temp_my_callback(message):
     print("my callback got called")
 
-def temp_my_callback(message):
+def my_callback(message):
     print("my callback got called")
     global br_subject
     if br_subject is not None:
+        print("before subject notify")
+
         asyncio.run(br_subject.notify(f"Event callback executed. {message}"))
 
 
 # Custom context manager to perform setup only once
 class SetupContext:
     def __enter__(self):
-        global bf
-        global br_subject
         global periodic_task  # Use the periodic_task from the main module
 
 
-        if bf is None:
-            asyncio.run( populate_bloom_filter())
+        asyncio.run( populate_bloom_filter())
 
-        if br_subject is None:
-            folder_path = str(project_root / config_data["data"]["path"])
-            print("folder to watch: ", folder_path)
-            br_subject = BloomFilterReader(folder_path)
-            asyncio.run(br_subject.attach(bf))
 
         if periodic_task is None:
             # Create a PeriodicTask instance with your callback
-            periodic_task = PeriodicTask(my_callback, interval_seconds=30)
+            periodic_task = PeriodicTask(my_callback, interval_seconds=10)
 
 
     def __exit__(self, exc_type, exc_value, traceback):
         pass
 
 # Call the setup context manager before the first request
-async def populate_bloom_filter(bf:BloomFilter):
+async def populate_bloom_filter():
+    global bf
+    global br_subject
+
     global config_data
     db_params = config_data["database"]
     fp = config_data["bloom_filter"]["false_positive_probability"]
-    o = OrderRepository(db_params)
-    all_orders = await o.get_all_orders()
-    bf = BloomFilter(len(all_orders), fp)
-    for order in all_orders:
-        bf.add(order['ID'])
+    size = config_data["bloom_filter"]["size"]
+    # o = OrderRepository(db_params)
+    # all_orders = await o.get_all_orders()
+    if bf is None:
+        bf = BloomFilter(size, fp)
+
+    if br_subject is None:
+        folder_path = str(project_root / config_data["data"]["path"])
+        print("folder to watch: ", folder_path)
+        br_subject = BloomFilterReader(folder_path)
+
+    # asyncio.run(br_subject.attach(bf))
+    await br_subject.attach(bf)
 
 @app.before_request
 def before_request():
