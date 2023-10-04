@@ -1,91 +1,58 @@
 from flask import Flask, jsonify, request
-import sys
 import logging
 import asyncio
 from pathlib import Path
+import sys
+
+import grpc
 from concurrent import futures
-# import grpc
-import threading  # Import the threading module
 
-
-# Get the root directory of your project (two levels up from web/app.py)
+# Get the root directory of your project
 project_root = Path(__file__).resolve().parent.parent
-
-# Add your project's root directory to sys.path
 sys.path.append(str(project_root))
 
 
+import web.notification_pb2 as my_grpc_pb2
+import web.notification_pb2_grpc as my_grpc_pb2_grpc
+
 from db.order_repository import OrderRepository
-from utility.load_config import load_config
 from reader.bloom_filter_reader import BloomFilterReader
+from utility.load_config import load_config
 from web.periodic_task import PeriodicTask
 from bloom_filter_sha256 import BloomFilter
-import notification_pb2 as my_grpc_pb2
-import notification_pb2_grpc as my_grpc_pb2_grpc
-import web.singleton_grpc_service as grpc_service
-
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
-# Declare global variables for bf, br_subject, and gRPC service
+# Global variables
 bf = None
 br_subject = None
 periodic_task = None
 
-grpc_service_instance = None
 
+# Load configuration
 config_data = load_config()
 
-print("I am here")
-
 # Example usage:
-def temp_my_callback(message):
-    print("my callback got called")
-
 def my_callback(message):
     print("my callback got called")
     global br_subject
     if br_subject is not None:
         print("before subject notify")
-
         asyncio.run(br_subject.notify(f"Event callback executed. {message}"))
-
-# Define a custom callback function to handle notifications
-def custom_notification_callback(message):
-    # Customize the notification handling logic here
-    print("Custom Notification:", message)
-    my_callback(message)
-    return "Custom Notification handled successfully"
-
-
-
-
-
-
-
-
-
-
-
 
 # Custom context manager to perform setup only once
 class SetupContext:
     def __enter__(self):
-        global periodic_task, grpc_service
+        run_grpc_server()
 
-    
+        global periodic_task
 
         asyncio.run(populate_bloom_filter())
 
         if periodic_task is None:
             # Create a PeriodicTask instance with your callback
             periodic_task = PeriodicTask(my_callback, interval_seconds=1000)
-
-        # Start the gRPC service in a separate thread
-        grpc_thread = threading.Thread(target=run_grpc_server, args=(custom_notification_callback,))
-        grpc_thread.start()  # Start the thread
-
 
     def __exit__(self, exc_type, exc_value, traceback):
         pass
@@ -110,6 +77,15 @@ async def populate_bloom_filter():
 
     await br_subject.attach(bf)
 
+# gRPC service implementation
+class NotificationService(my_grpc_pb2_grpc.NotificationServiceServicer):
+    def TriggerNotification(self, request, context):
+        message = request.message
+
+        # Call br_subject.notify with the provided message
+        asyncio.run(br_subject.notify(f"External Notification: {message}"))
+
+        return my_grpc_pb2.NotificationResponse(result="Notification triggered successfully")
 
 @app.before_request
 def before_request():
@@ -140,17 +116,15 @@ def get_order(order_id):
     else:
         return jsonify({"error": "Order not found"}), 404
 
-
-
-def run_grpc_server(notification_callback):
-    global grpc_service_instance
-
-    if grpc_service_instance is None:
-        grpc_service_instance = grpc_service.SingletonGRPCService(notification_callback)
-        grpc_service_instance.start_service()
-        grpc_service_instance.wait_for_termination()
-
+# Create and run the gRPC server
+def run_grpc_server():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    my_grpc_pb2_grpc.add_NotificationServiceServicer_to_server(NotificationService(), server)
+    server.add_insecure_port('[::]:50052')  # Use a different port for gRPC
+    server.start()
+    print("grpc server started")
 
 
 if __name__ == '__main__':
+    # Start the gRPC server alongside the Flask app
     app.run(debug=True, host='0.0.0.0')

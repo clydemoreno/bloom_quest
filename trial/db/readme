@@ -19,6 +19,30 @@ mysql -u root -p
 docker cp /path/on/host/file_or_directory <container_id_or_name>:/path/in/container/
 
 
+#get grafana working 
+#get influxdb
+
+docker run -d --name=influxdb -p 8086:8086 -v $PWD/influxdb:/var/lib/influxdb influxdb
+
+#if you want to stop and remove a container
+docker stop influxdb
+docker rm influxdb
+
+
+
+Influxdb configuration
+http://localhost:8086 webUI
+user:influxdbuser
+pw: admin123
+
+
+flask 5000
+grafana 3000
+admin admin123 (default is admin pw)
+influxdb  8086
+org: 
+mysql 3306
+
 
 todo:
 1. either download a mysql client
@@ -30,3 +54,6 @@ todo:
 7. add to an array of bloomfilters.
 8. The selector picks the latest bloomfilter based on timestamp
 7. create a web api that will get the orders. 
+
+to run mysql client inside db
+docker exec -it 3a54ec603448 bash

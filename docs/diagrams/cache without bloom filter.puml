@@ -1,0 +1,58 @@
+@startuml
+
+actor Client
+participant "Backend API" as Backend
+participant "External Cache Server" as Cache
+participant "External Data Source" as DataSource
+
+Client -> Backend: Send Request
+Backend -> Cache: Check Cache
+alt Cache Hit
+    Cache --> Backend: Cached Data
+    Backend -> Client: Respond with Cached Data
+else Cache Miss
+    Backend -> DataSource: Fetch Data
+    DataSource --> Backend: Data Retrieved
+    Backend -> Cache: Update Cache
+    Cache --> Backend: Cache Updated
+    Backend -> Client: Respond with Data from DataSource
+end
+
+@enduml
+
+
+Certainly! Here's a PlantUML sequence diagram that describes the interactions without using a Bloom filter, allowing you to compare and contrast with the previous scenario:
+
+@startuml
+
+actor Client
+participant "Backend API" as Backend
+participant "External Cache Server" as Cache
+participant "External Data Source" as DataSource
+
+Client -> Backend: Send Request
+Backend -> Cache: Check Cache
+alt Cache Hit
+    Cache --> Backend: Cached Data
+    Backend --> Client: Respond with Cached Data
+else Cache Miss
+    Backend -> DataSource: Fetch Data
+    DataSource --> Backend: Data Retrieved
+    Backend -> Cache: Update Cache
+    Cache --> Backend: Cache Updated
+    Backend --> Client: Respond with Data from DataSource
+end
+
+@enduml
+
+
+In this PlantUML sequence diagram:
+
+1. The `Client` actor initiates a request to the `Backend API`.
+2. The `Backend API` directly checks the `Cache` for the data.
+3. Depending on the result of the cache check, a conditional (`alt`) block is used to determine the next steps.
+4. If it's a cache hit, the `Backend API` responds to the `Client` with the cached data.
+5. If it's a cache miss, the `Backend API` fetches the data from the `External Data Source`, updates the `Cache`
+, and responds to the `Client` with the data from the `External Data Source`.
+
+This scenario represents a typical caching setup without the use of a Bloom filter. You can compare this diagram with the previous one to see how the introduction of a Bloom filter can improve cache hit rates and reduce cache misses.

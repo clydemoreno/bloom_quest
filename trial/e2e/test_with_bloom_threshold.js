@@ -9,6 +9,9 @@ const VUS = __ENV.VUS || 50;
 const responseTimesWithBloom = new Trend('response_times_with_bloom');
 const errorRateWithBloom = new Rate('error_rate_with_bloom');
 
+// Define the maximum acceptable average response time (in milliseconds)
+const maxAverageResponseTime = 500; // 500 milliseconds
+
 export const options = {
   stages: [
     { duration: '10s', target: VUS * 0.50 }, // Ramp up to the specified number of VUs over 10 seconds
@@ -41,11 +44,16 @@ export default function () {
 
     // Collect response times and error rates for usebloom=1
     responseTimesWithBloom.add(responseWithBloom.timings.duration);
-    // errorRateWithBloom.add(responseWithBloom.status !== 200);    
-
-    // Calculate error rate only for status codes other than 200 and 404
+    // errorRateWithBloom.add(responseWithBloom.status !== 200);
     if (responseWithBloom.status !== 200 && responseWithBloom.status !== 404) {
       errorRateWithBloom.add(1);
+    }
+
+
+    // Check if the average response time exceeds the threshold, and stop making requests if it does
+    if (responseTimesWithBloom.avg > maxAverageResponseTime) {
+      console.warn(`Average response time exceeded the threshold (${maxAverageResponseTime} ms). Stopping further requests.`);
+      return;
     }
 
     sleep(0.05);

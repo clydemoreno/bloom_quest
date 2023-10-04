@@ -29,18 +29,16 @@ class ThreadSafeArray:
 def reader(thread_safe_array, index):
     while not exit_signal.is_set():
         value = thread_safe_array.read(index)
-        print(f"Read value at index {index}: {value}")
         duration = random.randint(1, 5)
         time.sleep(duration)
-        print(f"Memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}  KB")
+        print(f"Read value at index {index}: {value}. Memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss}  KB  \r")
 
 def writer(thread_safe_array, new_array):
     while not exit_signal.is_set():
         thread_safe_array.write(new_array)
-        print("Array replaced with a new array")
         duration = random.randint(1, 5)
         time.sleep(duration)
-        print(f"Memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss} KB")
+        print(f"Array replaced with a new array. Memory usage: {resource.getrusage(resource.RUSAGE_SELF).ru_maxrss} KB \r")
 
 def keyboard_interrupt_handler(signal, frame):
     print("Keyboard interrupt received. Stopping...")
@@ -86,42 +84,4 @@ if __name__ == "__main__":
 
     print(f"Initial memory usage: {initial_memory} KB")
     print(f"Final memory usage: {final_memory} KB")
-# if __name__ == "__main__":
 
-#     def reader(thread_safe_array, index):
-#         value = thread_safe_array.read(index)
-#         print(f"Read value at index {index}: {value}")
-#         duration = random.randint(1,5)
-#         time.sleep(duration)
-
-#     def writer(thread_safe_array, new_array):
-#         thread_safe_array.write(new_array)
-#         print("Array replaced with a new array")
-
-#     ts_array = ThreadSafeArray()
-
-# SIM_SIZE = 1
-# reader_threads = []
-
-# for _ in range(SIM_SIZE):
-
-#     for i in range(5):
-#         reader_thread = threading.Thread(target=reader, args=(ts_array, i))
-#         reader_threads.append(reader_thread)
-#         reader_thread.start()
-
-#         for _ in range(5):
-
-#             writer_thread = threading.Thread(target=writer, args=(ts_array, [10, 20, 30, 40, 50]))
-#             writer_thread.start()
-#             writer_thread.join()
-
-
-#     for i in range(5):
-#         reader_thread = threading.Thread(target=reader, args=(ts_array, i))
-#         reader_threads.append(reader_thread)
-#         reader_thread.start()
-
-
-# for reader_thread in reader_threads:
-#     reader_thread.join()

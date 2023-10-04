@@ -1,14 +1,30 @@
 import asyncio
 from order_repository import OrderRepository
+from pathlib import Path
 import sys
-sys.path.append('../async/')
-from async_config_loader import AsyncConfigLoader
+
+# Adjust the path to the parent directory containing the utility folder
+sys_path = Path(__file__).resolve().parent.parent
+sys_path_str = str(sys_path)
+if sys_path_str not in sys.path:
+    sys.path.append(sys_path_str)
+
+
+# Import your required modules from the utility and other sources
+from utility.load_config import load_config
+
+
+
+# sys.path.append('../async/')
+# from async_config_loader import AsyncConfigLoader
 
 
 import test_data_generator
 async def main():
-    config_loader = AsyncConfigLoader('../async/config.json')
-    config_data = await config_loader.load_config_async()
+    # config_loader = AsyncConfigLoader('../async/config.json')
+
+    # config_data = await config_loader.load_config_async()
+    config_data = load_config()
     db_params = config_data['database']
     order_repository = OrderRepository(db_params)
     # Generate test data
@@ -18,8 +34,9 @@ async def main():
     print("Data inserted successfully")
 
 async def test_get_order_by_id(order_id):
-    config_loader = AsyncConfigLoader('../async/config.json')
-    config_data = await config_loader.load_config_async()
+    # config_loader = AsyncConfigLoader('../async/config.json')
+    # config_data = await config_loader.load_config_async()
+    config_data = load_config()
     db_params = config_data['database']
     
     order_repository = OrderRepository(db_params)
@@ -34,8 +51,9 @@ async def test_get_order_by_id(order_id):
         print("An error occurred:", e)
 
 async def select():
-    config_loader = AsyncConfigLoader('../async/config.json')
-    config_data = await config_loader.load_config_async()
+    # config_loader = AsyncConfigLoader('../async/config.json')
+    # config_data = await config_loader.load_config_async()
+    config_data = load_config()
     db_params = config_data['database']
     order_repository = OrderRepository(db_params)
 
@@ -53,6 +71,8 @@ async def select():
 
 if __name__ == "__main__":
     try:
+        asyncio.run(select())
+        asyncio.run(main())
         asyncio.run(select())
         asyncio.run(test_get_order_by_id(5))
     except Exception as e:

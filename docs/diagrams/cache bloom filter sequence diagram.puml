@@ -1,0 +1,27 @@
+@startuml
+
+actor Client
+participant "Backend API" as Backend
+participant "Bloom Filter" as Bloom
+participant "External Cache Server" as Cache
+participant "External Data Source" as DataSource
+
+Client -> Backend: Send Request
+Backend -> Bloom: Check with Bloom Filter
+Bloom --> Backend: Response (true or false)
+alt Bloom Filter Response is true
+    Backend -> Cache: Check Cache
+    Cache --> Backend: Cache Hit
+    Backend -> Client: Respond with Cached Data
+else Bloom Filter Response is false
+    Backend -> DataSource: Fetch Data
+    DataSource --> Backend: Data Retrieved
+    Backend -> Cache: Update Cache
+    Cache --> Backend: Cache Updated
+    Backend -> Client: Respond with Data from DataSource
+end
+
+@enduml
+
+
+//www.plantuml.com/plantuml/png/ZP91RYen38RtFiKlLkyjk02BYfOMjRiAr0DO6QE929Dfug4zVXCC6XW9YGt2pXVx-wDPPkMamo4GiTEOi0fUEgM-TBtpFNUAsGkxlNGDdZy_Pk2CSps1Gem7h7rGIKRLnYtpzbiEEmvOiMi5Mqb7Wwrn1tvbPMpZa9oSs5fRIMIwc3zTf1ROLjMDV0-IbSxT0fZF0gjMt1u_NbjSAvCLy-j96ybzxBBWdwP141Ds7BBy9mvwStaaVKPb2G36tHRlijko0h1_jpkjzUvrEiAINgIQKmAZczEBa1IrkrPcFfqvlkG2Qr7NsYG0uz74h_Qn4KrUZjBSoVdLDwpoI50ZcqV2skfTAlb6EIeNY9Rbjtx3Vm00

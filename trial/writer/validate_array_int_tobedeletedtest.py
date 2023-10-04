@@ -17,14 +17,14 @@ from bloom_filter_sha256 import BloomFilter
 def validate_with_bloom_filter():
 
 
-    db_params
+    # db_params
 
-    # Define a sample 'ids' list for testing
+    # # Define a sample 'ids' list for testing
 
-    # [{'ID': 1}, {'ID': 2}, {'ID': 3}]
-    order_repository = OrderRepository(db_params)
+    # # [{'ID': 1}, {'ID': 2}, {'ID': 3}]
+    # order_repository = OrderRepository(db_params)
 
-    sample_ids =   order_repository.get_all_ids() 
+    # sample_ids =   order_repository.get_all_ids() 
 
     # Create a NumPy array of false elements
     false_elements = np.array(['100001', '100002', '100003'])

@@ -55,7 +55,6 @@ def my_callback(message):
 def custom_notification_callback(message):
     # Customize the notification handling logic here
     print("Custom Notification:", message)
-    my_callback(message)
     return "Custom Notification handled successfully"
 
 

@@ -1,12 +1,21 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 import sys
 import logging
 import asyncio
 from pathlib import Path
-from concurrent import futures
-# import grpc
-import threading  # Import the threading module
+# import threading
+from flask import request
 
+app = Flask(__name__)
+app.logger.setLevel(logging.DEBUG)
+
+# Declare global variables for bf and br_subject
+bf = None
+br_subject = None
+periodic_task = None
+
+# Create a thread for the periodic task
+periodic_thread = None
 
 # Get the root directory of your project (two levels up from web/app.py)
 project_root = Path(__file__).resolve().parent.parent
@@ -14,26 +23,12 @@ project_root = Path(__file__).resolve().parent.parent
 # Add your project's root directory to sys.path
 sys.path.append(str(project_root))
 
-
 from db.order_repository import OrderRepository
 from utility.load_config import load_config
 from reader.bloom_filter_reader import BloomFilterReader
+# from bloom_filter_factory import BloomFilterFactory
 from web.periodic_task import PeriodicTask
 from bloom_filter_sha256 import BloomFilter
-import notification_pb2 as my_grpc_pb2
-import notification_pb2_grpc as my_grpc_pb2_grpc
-import web.singleton_grpc_service as grpc_service
-
-
-app = Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
-
-# Declare global variables for bf, br_subject, and gRPC service
-bf = None
-br_subject = None
-periodic_task = None
-
-grpc_service_instance = None
 
 config_data = load_config()
 
@@ -51,46 +46,25 @@ def my_callback(message):
 
         asyncio.run(br_subject.notify(f"Event callback executed. {message}"))
 
-# Define a custom callback function to handle notifications
-def custom_notification_callback(message):
-    # Customize the notification handling logic here
-    print("Custom Notification:", message)
-    my_callback(message)
-    return "Custom Notification handled successfully"
-
-
-
-
-
-
-
-
-
-
-
 
 # Custom context manager to perform setup only once
 class SetupContext:
     def __enter__(self):
-        global periodic_task, grpc_service
+        global periodic_task  # Use the periodic_task from the main module
 
-    
 
-        asyncio.run(populate_bloom_filter())
+        asyncio.run( populate_bloom_filter())
+
 
         if periodic_task is None:
             # Create a PeriodicTask instance with your callback
-            periodic_task = PeriodicTask(my_callback, interval_seconds=1000)
-
-        # Start the gRPC service in a separate thread
-        grpc_thread = threading.Thread(target=run_grpc_server, args=(custom_notification_callback,))
-        grpc_thread.start()  # Start the thread
+            periodic_task = PeriodicTask(my_callback, interval_seconds=10)
 
 
     def __exit__(self, exc_type, exc_value, traceback):
         pass
 
-# Populate Bloom Filter and BloomFilterReader
+# Call the setup context manager before the first request
 async def populate_bloom_filter():
     global bf
     global br_subject
@@ -99,7 +73,8 @@ async def populate_bloom_filter():
     db_params = config_data["database"]
     fp = config_data["bloom_filter"]["false_positive_probability"]
     size = config_data["bloom_filter"]["size"]
-
+    # o = OrderRepository(db_params)
+    # all_orders = await o.get_all_orders()
     if bf is None:
         bf = BloomFilter(size, fp)
 
@@ -108,8 +83,8 @@ async def populate_bloom_filter():
         print("folder to watch: ", folder_path)
         br_subject = BloomFilterReader(folder_path)
 
+    # asyncio.run(br_subject.attach(bf))
     await br_subject.attach(bf)
-
 
 @app.before_request
 def before_request():
@@ -127,6 +102,7 @@ def get_order(order_id):
 
     use_bloom = request.args.get("usebloom")
     if use_bloom == "1" and bf is not None:
+        # print("bf: ", bf.check(str(order_id)), bf.check(201))
         print(f"BF Size in flask is {bf.size}")
 
         if not bf.check(str(order_id)):
@@ -139,16 +115,6 @@ def get_order(order_id):
         return jsonify(order)
     else:
         return jsonify({"error": "Order not found"}), 404
-
-
-
-def run_grpc_server(notification_callback):
-    global grpc_service_instance
-
-    if grpc_service_instance is None:
-        grpc_service_instance = grpc_service.SingletonGRPCService(notification_callback)
-        grpc_service_instance.start_service()
-        grpc_service_instance.wait_for_termination()
 
 
 
