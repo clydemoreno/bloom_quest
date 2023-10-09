@@ -6,6 +6,7 @@ from bloom_filter_basic import BloomFilter as BloomFilterBasic
 import multiprocessing
 import random
 
+import time
 
 
 def worker(num_trials, expected_elements, false_positive_prob, query_elements_chunk,false_elements, true_elements, result_queue):
@@ -110,18 +111,49 @@ def simulate(expected_elements, false_positive_prob, num_trials):
     return observed_false_positive_prob,observed_true_negative_prob, observed_true_positive_prob, observed_false_negative_prob
 
 
+
+
 if __name__ == "__main__":
+    # Start measuring execution time
+    start_time = time.time()
+
     # Simulation parameters
-    expected_elements = 500
+    expected_elements = 100
     false_positive_prob = 0.05  # 1% false positive probability
-    num_trials = 1000
+    num_trials = 10000
 
+    observed_false_positive_prob, observed_true_negative_prob, observed_true_positive_prob, observed_false_negative_prob = simulate(expected_elements, false_positive_prob, num_trials)
 
+    # End measuring execution time
+    end_time = time.time()
 
-    observed_false_positive_prob, observed_true_negative_prob,observed_true_positive_prob, observed_false_negative_prob = simulate(expected_elements, false_positive_prob, num_trials)
+    # Calculate the total execution time
+    execution_time = end_time - start_time
 
     print(f"Expected False Positive Probability: {false_positive_prob}")
     print(f"Observed False Positive Probability: {observed_false_positive_prob}")
     print(f"Observed True Positive Probability: {observed_true_positive_prob}")
     print(f"Observed False Negative Probability: {observed_false_negative_prob}")
     print(f"Observed True Negative Probability: {observed_true_negative_prob}")
+
+    # Print the total execution time
+    print(f"Total Execution Time: {execution_time} seconds")
+
+
+
+
+# if __name__ == "__main__":
+#     # Simulation parameters
+#     expected_elements = 100
+#     false_positive_prob = 0.05  # 1% false positive probability
+#     num_trials = 10000
+
+
+
+#     observed_false_positive_prob, observed_true_negative_prob,observed_true_positive_prob, observed_false_negative_prob = simulate(expected_elements, false_positive_prob, num_trials)
+
+#     print(f"Expected False Positive Probability: {false_positive_prob}")
+#     print(f"Observed False Positive Probability: {observed_false_positive_prob}")
+#     print(f"Observed True Positive Probability: {observed_true_positive_prob}")
+#     print(f"Observed False Negative Probability: {observed_false_negative_prob}")
+#     print(f"Observed True Negative Probability: {observed_true_negative_prob}")

@@ -109,3 +109,16 @@ simualted false positives and true negatives
 add unit test to check if within the +- 1.0
 
 Add all unit tests and integration tests in parallel
+
+
+Using etcd to replicate bloom filter:
+
+https://chat.openai.com/share/581de69f-d4ee-4ebb-a52e-e68499ce8715
+
+
+Kubernetes
+colima start --profile kubernetes_profile --kubernetes
+
+brew install kind
+Instructions on how to setup kubernetes with colima and kind
+https://opencredo.com/blogs/building-the-best-kubernetes-test-cluster-on-macos/#:~:text=Install%20and%20run%20Colima,brew%20install%20colima

@@ -19,6 +19,16 @@ sys.path.append(str(parent_dir / 'reader'))
 from read_array_with_timestamp import load_array
 from writer.use_proto_buf import load_data_from_file
 
+from writer.hashing_functions.cityhash3pl import CityHash3pl
+
+def custom_hash2(val: str, seed: int) -> int:
+    if not isinstance(val, str):
+        val = str(val)
+    
+    hf = CityHash3pl()
+    return hf.hash(val)
+
+
 
 def custom_hash(val: str, seed: int) -> int:
     if not isinstance(val, str):
@@ -88,7 +98,10 @@ class BloomFilter(IAsyncObserver):
 
     @classmethod
     def get_hash_count(self, m, n):
+        # m = bit array size
+        # n = expected size of entries
         k = (m / n) * math.log(2)
+        
         return int(k)
 
 if __name__ == "__main__":

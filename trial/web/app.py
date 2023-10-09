@@ -37,8 +37,6 @@ grpc_service_instance = None
 
 config_data = load_config()
 
-print("I am here")
-
 # Example usage:
 def temp_my_callback(message):
     print("my callback got called")
@@ -141,7 +139,6 @@ def get_order(order_id):
         return jsonify({"error": "Order not found"}), 404
 
 
-
 def run_grpc_server(notification_callback):
     global grpc_service_instance
 
@@ -153,4 +150,4 @@ def run_grpc_server(notification_callback):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=8080)

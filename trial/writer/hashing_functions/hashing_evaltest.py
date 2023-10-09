@@ -16,6 +16,9 @@ from murmur_hash_func import MurmurHash  # Updated import
 
 from sha256_hash_func import SHA256Hash  # Updated import
 
+from mmh3pl import MurmurHash3
+
+from cityhash3pl import CityHash3pl
 
 # Define the input string and the number of iterations
 input_string = "Hello, World!"
@@ -25,7 +28,11 @@ num_iterations = 10000
 hash_functions = [
     MurmurHash(),
     SuperFastHash(),
-    SHA256Hash()
+    SHA256Hash(),
+    MurmurHash3(),
+    CityHash3pl(),
+
+
 ]
 
 # Dictionary to store execution times

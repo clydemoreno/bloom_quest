@@ -1,0 +1,12 @@
+# Build stage
+FROM python:3.8-slim AS build
+WORKDIR /app
+COPY ./requirements.txt .
+RUN pip install -r requirements.txt
+
+# Production stage
+FROM python:3.8-slim
+WORKDIR /app
+COPY --from=build /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
+COPY . .
+CMD ["python3", "/app/web/app.py"]

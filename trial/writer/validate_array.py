@@ -45,20 +45,19 @@ def validate_array(ids , bf:BloomFilter, initial=False):
                     false_negatives += 1
 
 
-        for item in true_elements:
-            if bf.check(item):
-                true_positives += 1
+        # for item in true_elements:
+        #     if bf.check(item):
+        #         true_positives += 1
 
         
         for item in combined_elements:
             if bf.check(item) and item not in true_elements:
                 false_positives += 1
-            # else:
-            #     true_negatives += 1
+         
 
 
         false_positive_ratio = false_positives / len(combined_elements)
-        true_positives_ratio = true_positives / len(true_elements)
+        true_positives_ratio =  1 - false_positive_ratio  #true_positives / len(true_elements)
         false_negatives_ratio = false_negatives / len(combined_elements) 
         
         true_negatives_ratio = 1 - false_negatives_ratio 
