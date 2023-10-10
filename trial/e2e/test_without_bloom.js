@@ -41,7 +41,10 @@ export default function () {
 
     // Collect response times and error rates for usebloom=0
     responseTimesWithoutBloom.add(responseWithoutBloom.timings.duration);
-    errorRateWithoutBloom.add(responseWithoutBloom.status !== 200);
+    errorRateWithoutBloom.add(responseWithoutBloom.status !== 200 && responseWithoutBloom.status !== 404);
+
+
+
 
     sleep(0.5);
   }

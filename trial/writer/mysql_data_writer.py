@@ -3,6 +3,7 @@ import aiomysql
 import abc
 import asyncio
 import random
+import os
 from datetime import datetime
 import numpy as np
 from pathlib import Path  # Import pathlib.Path for path handling
@@ -46,6 +47,11 @@ from checksum import checksum
 class MySqlDataWriter(IDataWriter):
     def __init__(self, config_data):
         self.db_params = config_data["database"]
+        MYSQL_HOST = os.environ.get('MYSQL_HOST')
+        # print("host name is: ", MYSQL_HOST)
+        if MYSQL_HOST is not None:
+            self.db_params["host"] = MYSQL_HOST
+
         self.data = config_data["data"]
         self.bloom_filter_parameters = config_data["bloom_filter"]
 

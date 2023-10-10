@@ -20,7 +20,7 @@ from utility.load_config import load_config
 
 
 import test_data_generator
-async def main():
+async def generate_entries():
     # config_loader = AsyncConfigLoader('../async/config.json')
 
     # config_data = await config_loader.load_config_async()
@@ -72,7 +72,7 @@ async def select():
 if __name__ == "__main__":
     try:
         asyncio.run(select())
-        asyncio.run(main())
+        asyncio.run(generate_entries())
         asyncio.run(select())
         asyncio.run(test_get_order_by_id(5))
     except Exception as e:

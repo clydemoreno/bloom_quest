@@ -36,6 +36,61 @@ class TestMySqlDataRepository(unittest.IsolatedAsyncioTestCase):  # Change the b
         array_length = await self.repository.build_array()
         self.assertGreater(array_length, 0)
 
+
+import unittest
+import os
+from unittest.mock import patch
+
+
+class TestMySqlDataWriter(unittest.TestCase):
+
+    @patch.dict(os.environ, {'MYSQL_HOST': 'your_mysql_host'})
+    def test_init_with_mysql_host_env_var(self):
+        # Define your config_data here (replace with actual values)
+        config_data = {
+            "database": {
+                "host": "default_mysql_host",
+                # Add other database parameters as needed
+            },
+            "data": {
+                # Add data parameters as needed
+            },
+            "bloom_filter": {
+                # Add bloom_filter parameters as needed
+            }
+        }
+
+        data_writer = MySqlDataWriter(config_data)
+
+        # Assert that the 'host' parameter in 'database' is set to the value from the environment variable
+        self.assertEqual(data_writer.db_params["host"], 'your_mysql_host')
+
+    def test_init_without_mysql_host_env_var(self):
+        # Define your config_data here (replace with actual values)
+        config_data = {
+            "database": {
+                "host": "default_mysql_host",
+                # Add other database parameters as needed
+            },
+            "data": {
+                # Add data parameters as needed
+            },
+            "bloom_filter": {
+                # Add bloom_filter parameters as needed
+            }
+        }
+
+        data_writer = MySqlDataWriter(config_data)
+
+        # Assert that the 'host' parameter in 'database' is set to the default value
+        self.assertEqual(data_writer.db_params["host"], 'default_mysql_host')
+
+if __name__ == '__main__':
+    unittest.main()
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -45,14 +45,5 @@ end
 
 @enduml
 
+//www.plantuml.com/plantuml/png/ZPB1JiCm38RlUGfhzxr03zEWWE20XAXu02inQhIiBOaxU7mIrwYD46YNIlxprP-jv9WO8y_dO0nQ7YEqmTF0Pigfjtx2WM5tY_P4WuERbwSTO0AjQ-Z-YoaE6A15snDq52yK1PVW3_WE6Q4RvsX9s58lfJ7BAB0__0WRwCeOh_GnKsAZQG54qK3Rapsf3mFhA8-U3G1ejT_sayY9LH0z46ZHDrcNfZ5ddvxxwWSAYRJfiq-fRd3OhDB00x7jLyrwL8qZUVPnz7GX9-Zl9TycXwpYV_TIqbstcRZVutZUta6vPNFCt_92lW40
 
-In this PlantUML sequence diagram:
-
-1. The `Client` actor initiates a request to the `Backend API`.
-2. The `Backend API` directly checks the `Cache` for the data.
-3. Depending on the result of the cache check, a conditional (`alt`) block is used to determine the next steps.
-4. If it's a cache hit, the `Backend API` responds to the `Client` with the cached data.
-5. If it's a cache miss, the `Backend API` fetches the data from the `External Data Source`, updates the `Cache`
-, and responds to the `Client` with the data from the `External Data Source`.
-
-This scenario represents a typical caching setup without the use of a Bloom filter. You can compare this diagram with the previous one to see how the introduction of a Bloom filter can improve cache hit rates and reduce cache misses.
