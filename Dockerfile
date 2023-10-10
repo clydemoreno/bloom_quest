@@ -12,3 +12,4 @@ RUN pip install mysql-connector-python
 
 # Command to run the Python script
 CMD ["python3", "/app/web/app.py"]
+
